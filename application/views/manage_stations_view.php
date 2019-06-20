@@ -58,7 +58,7 @@
                     <td><?=$client["id"]?></td>
                     <td><?=$client["name"]?></td>
                     <td><?=$client["ip"]?></td>
-                    <td><?=$client["server_id"]?></td>
+                    <td><?=$servers[$client["server_id"] - 1]["name"]?></td>
                     <td><button class="btn btn-primary" onclick="display(<?=$clientCount?>)">Redaguoti</button></td>
                     <td>
                         <form method="POST" action="<?=base_url()?>/client/delete/">

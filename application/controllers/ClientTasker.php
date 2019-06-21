@@ -35,8 +35,8 @@
 
         public function reboot($clients, $password) {
             foreach($clients as $client) {
-                $ssh = new Net_SSH2($client['ip']);
-                if (!$ssh->login($client['name'], $password)) {
+                $ssh = new Net_SSH2($client);
+                if (!$ssh->login('root', $password)) {
                     exit('Login Failed');
                 }
                 $ssh->exec('reboot');
@@ -47,7 +47,7 @@
         public function installJcats($client, $password, $server_ip) {
             foreach($clients as $client) {
                 $ssh = new Net_SSH2($client['ip']);
-                if (!$ssh->login($client['name'], $password)) {
+                if (!$ssh->login('root', $password)) {
                     exit('Login Failed');
                 }
                 $ssh->exec('mkdir /home/jcats');
@@ -59,7 +59,7 @@
         public function removeJcats($client, $password) {
             foreach($clients as $client) {
                 $ssh = new Net_SSH2($client['ip']);
-                if (!$ssh->login($client['name'], $password)) {
+                if (!$ssh->login('root', $password)) {
                     exit('Login Failed');
                 }
                 $ssh->exec('/home/jcats/jcats14.0/utils/putback.client -y');
@@ -69,7 +69,7 @@
         public function changeServer($client, $password, $server_ip) {
             foreach($clients as $client) {
                 $ssh = new Net_SSH2($client['ip']);
-                if (!$ssh->login($client['name'], $password)) {
+                if (!$ssh->login('root', $password)) {
                     exit('Login Failed');
                 }
                 $ssh->exec('/home/jcats/jcats14.0/utils/change_server.sh ' );

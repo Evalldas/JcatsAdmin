@@ -1,6 +1,6 @@
 <div class="row">
     <div class="col-lg-7">
-        <form id="clientTaskForm" action="<?=base_url()?>ClientTasker/">
+        <form method="POST" id="clientTaskForm" action="<?=base_url()?>ClientTasker/">
             <h4>Užduotys:</h4>
             <input type="password" name="password" placeholder="Slaptažodis">
             <button class="btn btn-danger" name="task" value="reboot">Restart</button><br><br>
@@ -10,8 +10,8 @@
                 <?php }?>
             </select>
             <button class="btn btn-danger" name="task" value="installJcats">Install Jcats</button>
-            <button class="btn btn-danger" name="task" value="removeJcats">Remove Jcats</button><br><
-            <button class="btn btn-danger" name="task" value="changeServer">Change server</button><br><
+            <button class="btn btn-danger" name="task" value="removeJcats">Remove Jcats</button>
+            <button class="btn btn-danger" name="task" value="changeServer">Change server</button>
         </form>
         <h3 class="col-title">Klientai</h3>
         <table class="table">
@@ -30,7 +30,7 @@
                     <td><?=$client["name"]?></td>
                     <td><?=$client["ip"]?></td>
                     <td><?=$servers[$client["server_id"] - 1]["name"]?></td>
-                    <td><input form="clientTaskForm" type="checkbox" name="clientCheckbox[]" value="<?=$client?>"><br/></td>
+                    <td><input form="clientTaskForm" type="checkbox" name="clientCheckbox[]" value="<?=$client['ip']?>"><br/></td>
                 </tr>
             <?php }?>
         </table>

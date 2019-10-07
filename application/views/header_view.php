@@ -22,9 +22,6 @@
       <li class="nav-item">
         <a class="nav-link" href="<?=site_url('dashboard/manage_stations')?>">Tvarkyti stotis</a>
       </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#">Apie</a>
-      </li>
     </ul>
   </div>
 </nav>

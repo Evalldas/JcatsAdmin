@@ -29,25 +29,28 @@
   .modal-content {
     background-color: #fefefe;
     margin: auto;
-    margin-left: 35%;
     padding: 20px;
     border: 1px solid #888;
     width: 60%;
-    height: 660px;;
+    height: auto;
   }
   
-  /* The Close Button */
-  .close {
-    color: #aaaaaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
+  .btn-modal {
+    width: 100%;
   }
-  
-  .close:hover,
-  .close:focus {
-    color: #000;
-    text-decoration: none;
-    cursor: pointer;
+
+  .top-menu {
+    width: 100%;
+    z-index: 2; /* Stay behind the modal */
+    padding: 15px;
+    top: 0;
+    position: sticky;
+    background-color: #fefefe;
+    border-bottom-style: solid;
+    border-bottom-color: #c9c9c9;
+    border-bottom-width: 1px;
   }
-  
+
+  .btn-top-menu {
+    margin: 5px;
+  }

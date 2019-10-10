@@ -11,7 +11,7 @@
             $result = $this->Server_model->insert([
                 'name' => $server_name,
                 'ip' => $server_ip
-            ]);
+            ], $server_name, $server_ip);
     
             redirect(site_url('dashboard/manage_stations/'));
         }

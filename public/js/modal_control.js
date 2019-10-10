@@ -1,7 +1,6 @@
 /**
  * Displaying and closing modals
- * @param {Number} count Defines modals that will be displayed or closed number
- * @param {String} modalId Defines modal that will be displayed or closed Id
+ * @param {String} modalId Defines modal's that will be displayed or closed Id
  */
 
  /**

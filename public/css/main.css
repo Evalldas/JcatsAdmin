@@ -14,8 +14,8 @@
 .modal {
     display: none; /* Hidden by default */
     position: fixed; /* Stay in place */
-    z-index: 1; /* Sit on top */
-    padding-top: 100px; /* Location of the box */
+    z-index: 100; /* Sit on top */
+    padding-top: 200px; /* Location of the box */
     left: 0;
     top: 0;
     width: 100%; /* Full width */
@@ -35,13 +35,16 @@
     height: auto;
   }
   
+  /* Make modal buttons go big */
   .btn-modal {
     width: 100%;
+    margin: 5px;
   }
 
-  .top-menu {
-    width: 100%;
-    z-index: 2; /* Stay behind the modal */
+  /* Task menu on the top */
+  .task-menu {
+    width: 100%; /* Full width */
+    z-index: 10; /* Stay behind the modal, but on top of everything else */
     padding: 15px;
     top: 0;
     position: sticky;
@@ -53,4 +56,25 @@
 
   .btn-top-menu {
     margin: 5px;
+  }
+
+  /* Question mark for server info message */
+  .server-info-icon:hover,
+  .server-info-icon:focus {
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .server-info-message {
+    visibility: hidden;
+    position: absolute;
+    z-index: 15;
+    padding: 5px;
+    padding-left: 20px;
+    background-color: #329c40;
+    border-radius: 5px; /* Make it al roundy and stuff */
+  }
+
+  .server-info-icon:hover .server-info-message {
+    visibility: visible;
   }

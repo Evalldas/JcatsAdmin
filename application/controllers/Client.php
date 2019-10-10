@@ -8,12 +8,12 @@
         public function create() {
             $client_name = $this->input->post('name');
             $client_ip = $this->input->post('ip');  
-            $server_id = $this->input->post('server_id');
+            $server_id = 0;
             $result = $this->Client_model->insert([
                 'name' => $client_name,
                 'ip' => $client_ip,
                 'server_id' => $server_id
-            ]);
+            ], $client_name, $client_ip);
     
             redirect(site_url('dashboard/manage_stations/'));
         }

@@ -6,9 +6,11 @@
         }
 
         public function create() {
+            $server_id = $this->input->post('id');
             $server_name = $this->input->post('name');
             $server_ip = $this->input->post('ip');    
             $result = $this->Server_model->insert([
+                'id' => $server_id,
                 'name' => $server_name,
                 'ip' => $server_ip
             ], $server_name, $server_ip);
@@ -17,10 +19,12 @@
         }
     
         public function update() {
+            $new_server_id = $this->input->post('new-id');
             $server_id = $this->input->post('id');
             $server_name = $this->input->post('name');
             $server_ip = $this->input->post('ip');
             $result = $this->Server_model->update([
+                'id' => $new_server_id,
                 'name' => $server_name,
                 'ip' => $server_ip
             ], $server_id);

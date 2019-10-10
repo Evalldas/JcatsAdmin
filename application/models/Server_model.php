@@ -8,7 +8,7 @@
                 $query = $this->db->get_where('server', ['id' => $server_id]);
             } else {
                 $this->db->from('server');
-                $this->db->order_by("name", "asc");
+                $this->db->order_by("id", "asc");
                 $query = $this->db->get();
             }
             return $query->result_array();

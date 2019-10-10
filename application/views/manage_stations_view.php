@@ -7,10 +7,13 @@
     <button class="btn btn-primary btn-top-menu" onclick="displayModal('addNewStationModal')">Add new station</button>
 
     <!-- Button to display addNewServerModal on the screen -->
-    <button class="btn btn-primary btn-top-menu" onclick="displayModal('addNewServerModal')">Add new station</button>
+    <button class="btn btn-primary btn-top-menu" onclick="displayModal('addNewServerModal')">Add new server</button>
 </div>
 <!-- End of task menu -->
 
+<div>
+    <h1 id="success-message"></h1>
+</div>
 
 <!-- 
     Row to store station and server lists
@@ -25,7 +28,6 @@
         <table class="table">
             <thead class="thead-dark">
                 <tr>
-                    <th>ID</th>
                     <th>Name</th>
                     <th>IP address</th>
                     <th>Server <span class="server-info-icon">&#8505;<span class="server-info-message">This column shows
@@ -36,7 +38,6 @@
             </thead>
             <?php foreach($clients as $client) {?>
             <tr>
-                <td><?=$client["id"]?></td>
                 <td><?=$client["name"]?></td>
                 <td><?=$client["ip"]?></td>
                 <td><?=$servers[$client["server_id"]]["name"]?></td>
@@ -117,6 +118,11 @@
                     <h3>Edit server</h3>
                     <form action="<?=base_url()?>/server/update/" method="POST">
                         <div class="form-group">
+                            <label for="id">ID:</label>
+                            <input name="new-id" type="text" value="<?=$server['id'];?>" class="form-control"
+                                id="new-id">
+                        </div>
+                        <div class="form-group">
                             <label for="name">Name:</label>
                             <input name="name" type="text" value="<?=$server['name'];?>" class="form-control" id="name">
                         </div>
@@ -125,7 +131,7 @@
                             <input name="ip" type="text" value="<?=$server['ip'];?>" class="form-control" id="ip"
                                 required pattern="^([0-9]{1,3}\.){3}[0-9]{1,3}$" placeholder="XXX.XXX.XXX.XXX">
                         </div>
-                        <input type="hidden" name="id" value="<?=$server['id'];?>">
+                        <input type="hidden" name="id" type="text" value="<?=$server['id'];?>" id="id">
                         <button type="submit" name="submit" class="btn btn-primary">Submit</button>
                     </form>
                     <button class="btn btn-dark btn-modal"
@@ -146,12 +152,12 @@
 <!--
     Modals with php forms
 -->
-<!-- Modal with form to add new workstations to the database -->
+<!-- Modal with form to add new worksations to the database -->
 <div id="addNewStationModal" class="modal">
     <!-- Modal content -->
     <div class="modal-content">
         <h4>Type in station details:</h4>
-        <form class="form-large" id="addClientForm" method="post" action="<?=base_url()?>/client/create/">
+        <form class="form-large" id="addClientForm" method="post" action="<?=base_url()?>client/create/">
             <div class="form-group">
                 <label for="stationNameInput">Station name:</label>
                 <input class="form-control" type="text" name="name" placeholder="Name">
@@ -172,7 +178,11 @@
     <!-- Modal content -->
     <div class="modal-content">
         <h4>Type in server details:</h4>
-        <form class="form-large" id="addServerForm" method="post" action="<?=base_url()?>/server/create/">
+        <form class="form-large" id="addServerForm" method="post" action="<?=base_url()?>server/create/">
+            <div class="form-group">
+                <label for="stationIdInput">Server ID:</label>
+                <input class="form-control" type="text" name="id" placeholder="ID">
+            </div>
             <div class="form-group">
                 <label for="stationNameInput">Server name:</label>
                 <input class="form-control" type="text" name="name" placeholder="Name">
@@ -187,3 +197,57 @@
         <button class="btn btn-dark btn-modal" onclick="closeModal('addNewServerModal')">Cancel</button>
     </div>
 </div>
+
+<!-- Be aware, JavaScript code below -->
+<script type="text/javascript">
+
+/**
+ * jQuery functions
+ * make sure jQuery library is imported before jQuery code or it won't work
+ */
+$(function() {
+    
+    /**
+     * This function handles addNewStation form
+     * 
+     * @param {String}  event       Helps to control the event called by the HTML form
+     * @param {String}  url         Holds action URL from the HTML form
+     * @param {Array}   postData    Holds the data submited by the HTML form 
+     * 
+     * @return void
+     */
+    $("#addClientForm").submit(function(event) {
+        event.preventDefault(); // Prevent default action of the form
+        var url = $(this).attr('action'); // Get action url from html form
+        var postData = $(this).serialize(); // Serialize data from input fields
+
+        // Send the POST method
+        $.post(url, postData, function(o) {
+            /**
+             * Cient controller checks if there are no duplicates and returns either 
+             *  1 for succsessful insertion, 2 for name duplicate, 3 for IP duplicate or 0 for undefined error
+             * If station has been added, alert about success or error and redirect back to the previous page
+             */
+            if (o.result == 1) {
+                alert("Workstation has been added succesfully");
+                window.location.href = "<?=site_url('dashboard/manage_stations')?>";
+            } else if (o.result == 2) {
+                alert(
+                    "Name you've entered is already in the database, please check the name before submiting"
+                );
+            } else if (o.result == 3) {
+                alert(
+                    "IP address you've entered is already in the database, please check the IP address before submiting"
+                );
+            } else {
+                alert(
+                    "Workstation has NOT been added to the database, please check if everything is okay before submiting"
+                );
+            }
+        }, 'json');
+
+    });
+});
+
+
+</script>

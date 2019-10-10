@@ -13,9 +13,23 @@
                 'name' => $client_name,
                 'ip' => $client_ip,
                 'server_id' => $server_id
-            ], $client_name, $client_ip);
+            ]);
     
-            redirect(site_url('dashboard/manage_stations/'));
+            $this->output->set_content_type('application/json');
+
+            if($result != "duplicate_name" && $result != "duplicate_ip") {
+                $this->output->set_output(json_encode(['result' => 1]));
+                return false;
+            }
+            elseif($result == "duplicate_name") {
+                $this->output->set_output(json_encode(['result' => 2]));
+            }
+            elseif($result == "duplicate_ip") {
+                $this->output->set_output(json_encode(['result' => 3]));
+            }
+            else {
+                $this->output->set_output(json_encode(['result' => 0]));
+            }
         }
     
         public function update() {

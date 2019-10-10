@@ -8,6 +8,10 @@
     <link href="<?=base_url()?>/public/css/bootstrap.min.css" rel="stylesheet">
     <!-- Custom CSS -->
     <link href="<?=base_url()?>/public/css/main.css" rel="stylesheet">
+
+    <link rel="icon" href="<?=base_url()?>/public/icons/favicon.ico">
+    <!-- jQuery library -->
+    <script language="JavaScript" type="text/javascript" src="<?=base_url()?>public/js/jquery.min.js"></script>
 </head>
 
 <body>

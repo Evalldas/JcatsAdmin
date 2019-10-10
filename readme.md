@@ -1,8 +1,3 @@
----
-title: "Jcats simulation admin dashboard"
-output: "pdf_document"
----
-
 # JCATS simulation admin dashboard
 
 This is admin dashboard made for an easy administration of JCATS simulation network.

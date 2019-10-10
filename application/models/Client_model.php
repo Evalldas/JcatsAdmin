@@ -27,28 +27,25 @@
             return $query->result_array(); // If failed to do anything, return empty result_array
         }
 
+        
         /**
-         * Insert new station in to the database
+         * insert
          *
-         * @param  mixed $data          
-         * @param  mixed $client_name
-         * @param  mixed $client_ip
+         * @param  mixed $data
          *
          * @return void
          */
         public function insert($data){
-            //$checkNameDuplicateQuery = $this->db->get_where('client', ['name' => $client_name]);
-            //$checkIpDuplicateQuery = $this->db->get_where('client', ['ip' => $client_ip]);
-            $check_name_duplicate_query = $data[0]['name'];
-            $check_ip_duplicate_query = $data[0]['ip'];
-            if ($checkNameDuplicateQuery->num_rows() == 0 && $checkIpDuplicateQuery->num_rows() == 0) {
+            $check_name_duplicate_query = $this->db->get_where('client', ['name' => $data['name']]);
+            $check_ip_duplicate_query = $this->db->get_where('client', ['ip' => $data['ip']]);
+            if ($check_name_duplicate_query->num_rows() == 0 && $check_ip_duplicate_query->num_rows() == 0) {
                 $this->db->insert('client', $data);
                 return $this->db->insert_id();
             }
             elseif($check_name_duplicate_query->num_rows() == 1) {
                 return "duplicate_name";
             }
-            elseif($check_name_duplicate_query->num_rows() == 1) {
+            elseif($check_ip_duplicate_query->num_rows() == 1) {
                 return "duplicate_ip";
             }
             else {

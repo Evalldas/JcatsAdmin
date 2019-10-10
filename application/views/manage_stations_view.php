@@ -223,6 +223,7 @@ $(function() {
 
         // Send the POST method
         $.post(url, postData, function(o) {
+            
             /**
              * Cient controller checks if there are no duplicates and returns either 
              *  1 for succsessful insertion, 2 for name duplicate, 3 for IP duplicate or 0 for undefined error

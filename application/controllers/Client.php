@@ -6,6 +6,7 @@
         }
 
         public function create() {
+            
             $client_name = $this->input->post('name');
             $client_ip = $this->input->post('ip');  
             $server_id = 0;

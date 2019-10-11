@@ -4,7 +4,7 @@
         /**
          * Get clients either by id or all of them at once in the array
          *
-         * @param  mixed $client_id
+         * @param  mixed $client_id Stations you want to get data ID. Function returns all stations if $client_id is empty
          * 
          * Usage:
          * For single station:      $this->Client_model->get(1);
@@ -31,28 +31,36 @@
         /**
          * insert
          *
-         * @param  mixed $data
+         * @param  mixed $data Array to store parsed data
          *
+         * Usage:
+         * $this->Client_model->insert(['name' => $name, 'ip' => $ip, 'server_id' => $server_id]);
+         * 
          * @return void
          */
         public function insert($data){
+
+            // Querys to check for duplicates. If query returns more than 0, that means duplicate has been found
             $check_name_duplicate_query = $this->db->get_where('client', ['name' => $data['name']]);
             $check_ip_duplicate_query = $this->db->get_where('client', ['ip' => $data['ip']]);
+            
+            // If no duplicates found, insert new record into the DB
             if ($check_name_duplicate_query->num_rows() == 0 && $check_ip_duplicate_query->num_rows() == 0) {
                 $this->db->insert('client', $data);
                 return $this->db->insert_id();
             }
-            elseif($check_name_duplicate_query->num_rows() == 1) {
-                return "duplicate_name";
+            elseif($check_name_duplicate_query->num_rows() > 0) {
+                return "duplicate_name"; // If name duplicate found, return err message
             }
-            elseif($check_ip_duplicate_query->num_rows() == 1) {
-                return "duplicate_ip";
+            elseif($check_ip_duplicate_query->num_rows() > 0) {
+                return "duplicate_ip"; // If name IP found, return err message
             }
             else {
-                return $this->db->insert_id();
+                return $this->db->insert_id(); // Else return empty result for undefined error
             }
         }
 
+        
         public function update($data, $client_id){
             $this->db->where(['id' => $client_id]);
             $this->db->update('client', $data);

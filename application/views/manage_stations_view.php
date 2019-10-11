@@ -172,6 +172,7 @@
         <button class="btn btn-dark btn-modal" onclick="closeModal('addNewStationModal')">Cancel</button>
     </div>
 </div>
+<!-- End of station adding modal -->
 
 <!-- Modal with form to add new servers to the database -->
 <div id="addNewServerModal" class="modal">
@@ -197,58 +198,94 @@
         <button class="btn btn-dark btn-modal" onclick="closeModal('addNewServerModal')">Cancel</button>
     </div>
 </div>
+<!-- End of server adding modal -->
 
 <!-- Be aware, JavaScript code below -->
 <script type="text/javascript">
-
 /**
  * jQuery functions
  * make sure jQuery library is imported before jQuery code or it won't work
  */
 $(function() {
-    
+    /**
+     * Gobal variables
+     */
+    var msg_success = "Success!";
+    var msg_ip_duplicate =
+        "IP address you've entered is already in the database, please check the IP address before submiting";
+    var msg_name_duplicate =
+        "Name you've entered is already in the database, please check the name before submiting";
+    var msg_undefined_err = "Unknown error has occured, please try again or contact your system administrator";
+    var msg_id_duplicate = "ID you've entered is already in the database, please check the ID before submiting";
+
     /**
      * This function handles addNewStation form
      * 
      * @param {String}  event       Helps to control the event called by the HTML form
-     * @param {String}  url         Holds action URL from the HTML form
-     * @param {Array}   postData    Holds the data submited by the HTML form 
      * 
      * @return void
      */
     $("#addClientForm").submit(function(event) {
         event.preventDefault(); // Prevent default action of the form
         var url = $(this).attr('action'); // Get action url from html form
-        var postData = $(this).serialize(); // Serialize data from input fields
+        var post_data = $(this).serialize(); // Serialize data from input fields
 
         // Send the POST method
-        $.post(url, postData, function(o) {
-            
+        $.post(url, post_data, function(o) {
+
             /**
-             * Cient controller checks if there are no duplicates and returns either 
-             *  1 for succsessful insertion, 2 for name duplicate, 3 for IP duplicate or 0 for undefined error
+             * Client controller checks if there are no duplicates and returns either 
+             * 1 for succsessful insertion, 2 for name duplicate, 3 for IP duplicate or 0 for undefined error
              * If station has been added, alert about success or error and redirect back to the previous page
              */
             if (o.result == 1) {
-                alert("Workstation has been added succesfully");
+                alert(msg_success);
                 window.location.href = "<?=site_url('dashboard/manage_stations')?>";
             } else if (o.result == 2) {
-                alert(
-                    "Name you've entered is already in the database, please check the name before submiting"
-                );
+                alert(msg_name_duplicate);
             } else if (o.result == 3) {
-                alert(
-                    "IP address you've entered is already in the database, please check the IP address before submiting"
-                );
+                alert(msg_ip_duplicate);
             } else {
-                alert(
-                    "Workstation has NOT been added to the database, please check if everything is okay before submiting"
-                );
+                alert(msg_undefined_err);
+            }
+        }, 'json');
+
+    });
+
+    /**
+     * This function handles addNewServer form
+     * 
+     * @param {String}  event       Helps to control the event called by the HTML form
+     * 
+     * @return void
+     */
+    $("#addServerForm").submit(function(event) {
+        event.preventDefault(); // Prevent default action of the form
+        var url = $(this).attr('action'); // Get action url from html form
+        var post_data = $(this).serialize(); // Serialize data from input fields
+
+        // Send the POST method
+        $.post(url, post_data, function(o) {
+
+            /**
+             * Server controller checks if there are no duplicates and returns either 
+             * 1 for succsessful insertion, 2 for ID duplicate, 3 for name duplicate, 4 for IP duplicate or 0 for undefined error
+             * If station has been added, alert about success or error and redirect back to the previous page
+             */
+            if (o.result == 1) {
+                alert(msg_success);
+                window.location.href = "<?=site_url('dashboard/manage_stations')?>";
+            } else if (o.result == 2) {
+                alert(msg_id_duplicate);
+            } else if (o.result == 3) {
+                alert(msg_name_duplicate);
+            } else if (o.result == 4) {
+                alert(msg_ip_duplicate);
+            } else {
+                alert(msg_undefined_err);
             }
         }, 'json');
 
     });
 });
-
-
 </script>

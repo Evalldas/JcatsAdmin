@@ -4,10 +4,11 @@
 -->
 <div class="task-menu">
     <!-- Button to display addNewStationModal on the screen -->
-    <button class="btn btn-primary btn-top-menu" onclick="displayModal('addNewStationModal')">Add new station</button>
-
+    <button class="btn btn-primary btn-top-menu" data-toggle="modal" data-target="#addNewStationModal">Add new
+        station</button>
     <!-- Button to display addNewServerModal on the screen -->
-    <button class="btn btn-primary btn-top-menu" onclick="displayModal('addNewServerModal')">Add new server</button>
+    <button class="btn btn-primary btn-top-menu" data-toggle="modal" data-target="#addNewServerModal">Add new
+        server</button>
 </div>
 <!-- End of task menu -->
 
@@ -30,7 +31,8 @@
                 <tr>
                     <th>Name</th>
                     <th>IP address</th>
-                    <th>Server <span class="server-info-icon">&#8505;<span class="server-info-message">This column shows
+                    <th>Server <span class="server-info-icon"><span class="fas fa-info-circle"></span><span
+                                class="server-info-message">This column shows
                                 what server the station is linked to</span></span></th>
                     <th></th>
                     <th></th>
@@ -152,50 +154,105 @@
 <!--
     Modals with php forms
 -->
+
+<button id="openEditStationModal" class="btn btn-primary btn-top-menu" relid="3" data-toggle="modal" data-target="#editStationModal">Add new
+    server</button>
+
+<!-- Modal with form to edit worksations to the database -->
+<div id="editStationModal" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <!-- Modal content -->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Type in station details:</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form class="form-large" id="addClientForm" method="post" action="<?=base_url()?>client/create/">
+                    <div class="form-group">
+                        <label for="stationNameInput">Station name:</label>
+                        <input id="stationName" class="form-control" type="text" name="name" placeholder="Name">
+                    </div>
+                    <div class="form-group">
+                        <label for="stationIpInput">IP address:</label>
+                        <input id="stationIp" class="form-control" name="ip" required
+                            pattern="^([0-9]{1,3}\.){3}[0-9]{1,3}$" placeholder="XXX.XXX.XXX.XXX">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-modal">Submit</button>
+                </form>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End of station adding modal -->
+
 <!-- Modal with form to add new worksations to the database -->
-<div id="addNewStationModal" class="modal">
-    <!-- Modal content -->
-    <div class="modal-content">
-        <h4>Type in station details:</h4>
-        <form class="form-large" id="addClientForm" method="post" action="<?=base_url()?>client/create/">
-            <div class="form-group">
-                <label for="stationNameInput">Station name:</label>
-                <input class="form-control" type="text" name="name" placeholder="Name">
+<div id="addNewStationModal" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <!-- Modal content -->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Type in station details:</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
             </div>
-            <div class="form-group">
-                <label for="stationIpInput">IP address:</label>
-                <input class="form-control" name="ip" required pattern="^([0-9]{1,3}\.){3}[0-9]{1,3}$"
-                    placeholder="XXX.XXX.XXX.XXX">
+            <div class="modal-body">
+                <form class="form-large" id="addClientForm" method="post" action="<?=base_url()?>client/create/">
+                    <div class="form-group">
+                        <label for="stationNameInput">Station name:</label>
+                        <input class="form-control" type="text" name="name" placeholder="Name">
+                    </div>
+                    <div class="form-group">
+                        <label for="stationIpInput">IP address:</label>
+                        <input class="form-control" name="ip" required pattern="^([0-9]{1,3}\.){3}[0-9]{1,3}$"
+                            placeholder="XXX.XXX.XXX.XXX">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-modal">Submit</button>
+                </form>
+
             </div>
-            <button type="submit" class="btn btn-primary btn-modal">Submit</button>
-        </form>
-        <button class="btn btn-dark btn-modal" onclick="closeModal('addNewStationModal')">Cancel</button>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
     </div>
 </div>
 <!-- End of station adding modal -->
 
 <!-- Modal with form to add new servers to the database -->
-<div id="addNewServerModal" class="modal">
-    <!-- Modal content -->
-    <div class="modal-content">
-        <h4>Type in server details:</h4>
-        <form class="form-large" id="addServerForm" method="post" action="<?=base_url()?>server/create/">
-            <div class="form-group">
-                <label for="stationIdInput">Server ID:</label>
-                <input class="form-control" type="text" name="id" placeholder="ID">
+<div id="addNewServerModal" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <!-- Modal content -->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Type in server details:</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
             </div>
-            <div class="form-group">
-                <label for="stationNameInput">Server name:</label>
-                <input class="form-control" type="text" name="name" placeholder="Name">
+            <div class="modal-body">
+                <form class="form-large" id="addServerForm" method="post" action="<?=base_url()?>server/create/">
+                    <div class="form-group">
+                        <label for="stationIdInput">Server ID:</label>
+                        <input class="form-control" type="text" name="id" placeholder="ID">
+                    </div>
+                    <div class="form-group">
+                        <label for="stationNameInput">Server name:</label>
+                        <input class="form-control" type="text" name="name" placeholder="Name">
+                    </div>
+                    <div class="form-group">
+                        <label for="stationIpInput">IP address:</label>
+                        <input class="form-control" name="ip" required pattern="^([0-9]{1,3}\.){3}[0-9]{1,3}$"
+                            placeholder="XXX.XXX.XXX.XXX">
+                    </div>
+                    <button type="submit" name="submit" class="btn btn-primary btn-modal">Submit</button>
+                </form>
             </div>
-            <div class="form-group">
-                <label for="stationIpInput">IP address:</label>
-                <input class="form-control" name="ip" required pattern="^([0-9]{1,3}\.){3}[0-9]{1,3}$"
-                    placeholder="XXX.XXX.XXX.XXX">
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
             </div>
-            <button type="submit" name="submit" class="btn btn-primary btn-modal">Submit</button>
-        </form>
-        <button class="btn btn-dark btn-modal" onclick="closeModal('addNewServerModal')">Cancel</button>
+        </div>
     </div>
 </div>
 <!-- End of server adding modal -->
@@ -203,12 +260,17 @@
 <!-- Be aware, JavaScript code below -->
 <script type="text/javascript">
 /**
+ * GLOBAL variables
+ */
+var base_url = "<?=base_url()?>";
+
+/**
  * jQuery functions
  * make sure jQuery library is imported before jQuery code or it won't work
  */
 $(function() {
     /**
-     * Gobal variables
+     * Gobal JQuery variables
      */
     var msg_success = "Success!";
     var msg_ip_duplicate =
@@ -286,6 +348,24 @@ $(function() {
             }
         }, 'json');
 
+    });
+});
+
+$(document).ready(function() {
+    $('#openEditStationModal').click(function() {
+
+        var id = $(this).attr('relid'); // get attribute value
+        var url = base_url + "client/get/";
+        $.ajax({
+            url : url,
+            data:{id : id},
+            method:'GET',
+            dataType:'json',
+            success:function(response) {
+                document.getElementById("stationName").value = response.result[0].name;
+                document.getElementById("stationIp").value = response.result[0].ip;
+            }
+        });
     });
 });
 </script>

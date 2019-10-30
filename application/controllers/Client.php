@@ -2,10 +2,24 @@
     class Client extends CI_Controller {
         public function __construct(){
             parent::__construct();
-            $this->load->model('Client_model');
+            $this->load->model('Client_model', 'client_model');
         }
 
-        
+        /**
+         * get
+         *
+         * @return void
+         */
+        public function get() {
+            $client_id = $this->input->get('id');
+
+            $result = $this->client_model->get($client_id);
+
+            $this->output->set_content_type('application/json');
+
+            $this->output->set_output(json_encode(['result' => $result]));
+        }
+
         /**
          * Create new station
          * 
@@ -17,11 +31,11 @@
 
             // Get data from form through POST method
             $client_name = $this->input->post('name');
-            $client_ip = $this->input->post('ip');  
+            $client_ip = $this->input->post('ip');
             $server_id = 0; // Byt default given server id 0. Later updates automatically when station connects to the network
 
             // Parse data array to the client_model func insert();
-            $result = $this->Client_model->insert([
+            $result = $this->client_model->insert([
                 'name' => $client_name,
                 'ip' => $client_ip,
                 'server_id' => $server_id
@@ -58,7 +72,7 @@
             $client_name = $this->input->post('name');
             $client_ip = $this->input->post('ip');
             $server_id = $this->input->post('server_id');
-            $result = $this->Client_model->update([
+            $result = $this->client_model->update([
                 'name' => $client_name,
                 'ip' => $client_ip,
                 'server_id' => $server_id
@@ -69,7 +83,7 @@
     
         public function delete() {
             $client_id = $this->input->post('id');
-            $result = $this->Client_model->delete($client_id);
+            $result = $this->client_model->delete($client_id);
     
             redirect(base_url('dashboard/manage_stations/'));
         }

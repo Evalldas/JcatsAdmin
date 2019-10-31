@@ -2,8 +2,24 @@
     class Server extends CI_Controller {
         public function __construct(){
             parent::__construct();
-            $this->load->model('Server_model');
+            $this->load->model('Server_model', 'server_model');
         }
+
+        /**
+         * get
+         *
+         * @return void
+         */
+        public function get() {
+            $id = $this->input->get('id');
+
+            $result = $this->server_model->get($id);
+
+            $this->output->set_content_type('application/json');
+
+            $this->output->set_output(json_encode(['result' => $result]));
+        }
+
 
         /**
          * Create new station

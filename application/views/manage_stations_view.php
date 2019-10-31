@@ -43,8 +43,8 @@
                 <td><?=$client["name"]?></td>
                 <td><?=$client["ip"]?></td>
                 <td><?=$servers[$client["server_id"]]["name"]?></td>
-                <td><button class="btn btn-primary"
-                        onclick="displayModal('editClientModal' + <?=$clientCount?>)">Edit</button>
+                <td><button class="openEditStationModal btn btn-primary" relid="<?=$client['id'];?>" data-toggle="modal"
+                        data-target="#editStationModal">Edit</button>
                 </td>
                 <td>
                     <form method="POST" onsubmit="return confirm('Do you really want to delete station from the list?')"
@@ -54,30 +54,6 @@
                     </form>
                 </td>
             </tr>
-            <!-- Modal for station data editing -->
-            <div id="editClientModal<?=$clientCount?>" class="modal">
-                <!-- Modal content -->
-                <div class="modal-content">
-                    <h3>Edit station</h3>
-                    <form action="<?=base_url()?>/client/update/" method="POST">
-                        <div class="form-group">
-                            <label for="name">Name:</label>
-                            <input name="name" type="text" value="<?=$client['name'];?>" class="form-control" id="name">
-                        </div>
-                        <div class="form-group">
-                            <label for="text">IP:</label>
-                            <input name="ip" type="text" value="<?=$client['ip'];?>" class="form-control" id="ip"
-                                required pattern="^([0-9]{1,3}\.){3}[0-9]{1,3}$" placeholder="XXX.XXX.XXX.XXX">
-                        </div>
-                        <input type="hidden" name="id" value="<?=$client['id'];?>">
-                        <button type="submit" name="submit" class="btn btn-primary">Submit</button>
-                    </form>
-                    <button class="btn btn-dark btn-modal"
-                        onclick="closeModal('editClientModal' + <?=$clientCount?>)">Cancel</button>
-                </div>
-            </div>
-            <!-- End of station editing modal -->
-            <?php $clientCount++;?>
             <?php }?>
         </table>
         <!-- End of station list -->
@@ -103,8 +79,8 @@
                 <td><?=$server["id"]?></td>
                 <td><?=$server["name"]?></td>
                 <td><?=$server["ip"]?></td>
-                <td><button class="btn btn-primary"
-                        onclick="displayModal('editServerModal' + <?=$serverCount?>)">Edit</button></td>
+                <td><button class="openEditServerModal btn btn-primary" relid="<?=$server['id']?>" data-toggle="modal"
+                        data-target="#editServerModal">Edit</button>
                 <td>
                     <form method="POST" onsubmit="return confirm('Do you really want to delete server from the list?')"
                         action="<?=base_url()?>/server/delete/">
@@ -113,35 +89,6 @@
                     </form>
                 </td>
             </tr>
-            <!-- Modal for server data editing -->
-            <div id="editServerModal<?=$serverCount?>" class="modal">
-                <!-- Modal content -->
-                <div class="modal-content">
-                    <h3>Edit server</h3>
-                    <form action="<?=base_url()?>/server/update/" method="POST">
-                        <div class="form-group">
-                            <label for="id">ID:</label>
-                            <input name="new-id" type="text" value="<?=$server['id'];?>" class="form-control"
-                                id="new-id">
-                        </div>
-                        <div class="form-group">
-                            <label for="name">Name:</label>
-                            <input name="name" type="text" value="<?=$server['name'];?>" class="form-control" id="name">
-                        </div>
-                        <div class="form-group">
-                            <label for="text">IP:</label>
-                            <input name="ip" type="text" value="<?=$server['ip'];?>" class="form-control" id="ip"
-                                required pattern="^([0-9]{1,3}\.){3}[0-9]{1,3}$" placeholder="XXX.XXX.XXX.XXX">
-                        </div>
-                        <input type="hidden" name="id" type="text" value="<?=$server['id'];?>" id="id">
-                        <button type="submit" name="submit" class="btn btn-primary">Submit</button>
-                    </form>
-                    <button class="btn btn-dark btn-modal"
-                        onclick="closeModal('editServerModal' + <?=$serverCount?>)">Cancel</button>
-                </div>
-            </div>
-            <!-- End of server editing modal -->
-            <?php $serverCount++;?>
             <?php }?>
             <?php }?>
         </table>
@@ -154,11 +101,7 @@
 <!--
     Modals with php forms
 -->
-
-<button id="openEditStationModal" class="btn btn-primary btn-top-menu" relid="3" data-toggle="modal" data-target="#editStationModal">Add new
-    server</button>
-
-<!-- Modal with form to edit worksations to the database -->
+<!-- Modal with form to edit worksation data in the database -->
 <div id="editStationModal" class="modal fade" role="dialog">
     <div class="modal-dialog modal-lg">
         <!-- Modal content -->
@@ -168,19 +111,20 @@
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
             </div>
             <div class="modal-body">
-                <form class="form-large" id="addClientForm" method="post" action="<?=base_url()?>client/create/">
+                <p id="editStationModalErrorMessage" style="color: red;"></p>
+                <form class="form-large" id="editStationForm" method="post" action="<?=base_url()?>client/update/">
                     <div class="form-group">
-                        <label for="stationNameInput">Station name:</label>
-                        <input id="stationName" class="form-control" type="text" name="name" placeholder="Name">
+                        <label for="stationName">Station name:</label>
+                        <input id="stationNameInput" class="form-control" type="text" name="name" placeholder="Name">
                     </div>
                     <div class="form-group">
-                        <label for="stationIpInput">IP address:</label>
-                        <input id="stationIp" class="form-control" name="ip" required
+                        <label for="stationIp">IP address:</label>
+                        <input id="stationIpInput" class="form-control" name="ip" required
                             pattern="^([0-9]{1,3}\.){3}[0-9]{1,3}$" placeholder="XXX.XXX.XXX.XXX">
                     </div>
-                    <button type="submit" class="btn btn-primary btn-modal">Submit</button>
+                    <input type="hidden" name="id" id="stationIdInput">
+                    <button type="submit" name="submit" class="btn btn-primary btn-modal">Submit</button>
                 </form>
-
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
@@ -188,7 +132,44 @@
         </div>
     </div>
 </div>
-<!-- End of station adding modal -->
+<!-- End of station editing modal -->
+
+<!-- Modal with form to edit servers in the database -->
+<div id="editServerModal" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <!-- Modal content -->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Type in server details:</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="editStationModalErrorMessage" style="color: red;"></p>
+                <form class="form-large" id="addServerForm" method="post" action="<?=base_url()?>server/update/">
+                    <div class="form-group">
+                        <label for="stationIdInput">Server ID:</label>
+                        <input id="serverIdInput" class="form-control" type="text" name="id" placeholder="ID">
+                    </div>
+                    <div class="form-group">
+                        <label for="stationNameInput">Server name:</label>
+                        <input id="serverNameInput" class="form-control" type="text" name="name" placeholder="Name">
+                    </div>
+                    <div class="form-group">
+                        <label for="stationIpInput">IP address:</label>
+                        <input id="serverIpInput" class="form-control" name="ip" required
+                            pattern="^([0-9]{1,3}\.){3}[0-9]{1,3}$" placeholder="XXX.XXX.XXX.XXX">
+                    </div>
+                    <button type="submit" name="submit" class="btn btn-primary btn-modal">Submit</button>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End of server editing modal -->
+
 
 <!-- Modal with form to add new worksations to the database -->
 <div id="addNewStationModal" class="modal fade" role="dialog">
@@ -263,23 +244,19 @@
  * GLOBAL variables
  */
 var base_url = "<?=base_url()?>";
-
+var msg_success = "Success!";
+var msg_ip_duplicate =
+    "IP address you've entered is already in the database, please check the IP address before submiting";
+var msg_name_duplicate =
+    "Name you've entered is already in the database, please check the name before submiting";
+var msg_undefined_err = "Unknown error has occured, please try again or contact your system administrator";
+var msg_id_duplicate = "ID you've entered is already in the database, please check the ID before submiting";
+var msg_err_no_data = "Error, failed to retrieve data from the database";
 /**
  * jQuery functions
  * make sure jQuery library is imported before jQuery code or it won't work
  */
 $(function() {
-    /**
-     * Gobal JQuery variables
-     */
-    var msg_success = "Success!";
-    var msg_ip_duplicate =
-        "IP address you've entered is already in the database, please check the IP address before submiting";
-    var msg_name_duplicate =
-        "Name you've entered is already in the database, please check the name before submiting";
-    var msg_undefined_err = "Unknown error has occured, please try again or contact your system administrator";
-    var msg_id_duplicate = "ID you've entered is already in the database, please check the ID before submiting";
-
     /**
      * This function handles addNewStation form
      * 
@@ -349,21 +326,107 @@ $(function() {
         }, 'json');
 
     });
+
+    /**
+     * This function handles editStation form
+     * 
+     * @param {String}  event       Helps to control the event called by the HTML form
+     * 
+     * @return void
+     */
+    $("#editStationForm").submit(function(event) {
+        event.preventDefault(); // Prevent default action of the form
+        var url = $(this).attr('action'); // Get action url from html form
+        var post_data = $(this).serialize(); // Serialize data from input fields
+
+        // Send the POST method
+        $.post(url, post_data, function(o) {
+
+            /**
+             * Client controller checks if there are no duplicates and returns either 
+             * 1 for succsessful insertion, 2 for name duplicate, 3 for IP duplicate or 0 for undefined error
+             * If station has been added, alert about success or error and redirect back to the previous page
+             */
+            if (o.result == 1) {
+                alert(msg_success);
+                window.location.href = "<?=site_url('dashboard/manage_stations')?>";
+            } else if (o.result == 2) {
+                alert(msg_name_duplicate);
+            } else if (o.result == 3) {
+                alert(msg_ip_duplicate);
+            } else {
+                alert(msg_undefined_err);
+            }
+        }, 'json');
+
+    });
 });
 
+/**
+ * AJAX functions to display dynamic modal content
+ */
 $(document).ready(function() {
-    $('#openEditStationModal').click(function() {
 
-        var id = $(this).attr('relid'); // get attribute value
-        var url = base_url + "client/get/";
+    // Opent modal to edit station
+    $('.openEditStationModal').click(function() {
+        var id = $(this).attr('relid'); // Get attribute value
+        var url = base_url + "client/get/"; // Define action URL 
         $.ajax({
-            url : url,
-            data:{id : id},
-            method:'GET',
-            dataType:'json',
-            success:function(response) {
-                document.getElementById("stationName").value = response.result[0].name;
-                document.getElementById("stationIp").value = response.result[0].ip;
+            url: url,
+            data: {
+                id: id // Data that goes in to the GET request
+            },
+            method: 'GET', // Define request method
+            dataType: 'json',
+            success: function(response) {
+                // If response is not empty
+                if (response.result[0]) {
+                    // Set input field values to the response values
+                    document.getElementById("stationNameInput").value = response.result[0]
+                        .name;
+                    document.getElementById("stationIpInput").value = response.result[0].ip;
+                    document.getElementById("stationIdInput").value = response.result[0].id;
+                } else {
+                    // Set the error message
+                    document.getElementById("editStationModalErrorMessage").innerHTML =
+                        msg_err_no_data;
+                }
+            },
+            error: function() {
+                document.getElementById("editStationModalErrorMessage").innerHTML =
+                    msg_err_no_data;
+            }
+        });
+    });
+
+    // Open modal to edit server
+    $('.openEditServerModal').click(function() {
+        var id = $(this).attr('relid'); // Get attribute value
+        var url = base_url + "server/get/"; // Define action URL 
+        $.ajax({
+            url: url,
+            data: {
+                id: id // Data that goes in to the GET request
+            },
+            method: 'GET', // Define request method
+            dataType: 'json',
+            success: function(response) {
+                // If response is not empty
+                if (response.result[0]) {
+                    // Set input field values to the response values
+                    document.getElementById("serverIdInput").value = response.result[0].id;
+                    document.getElementById("serverNameInput").value = response.result[0]
+                        .name;
+                    document.getElementById("serverIpInput").value = response.result[0].ip;
+                } else {
+                    // Set the error message
+                    document.getElementById("editStationModalErrorMessage").innerHTML =
+                        msg_err_no_data;
+                }
+            },
+            error: function() {
+                document.getElementById("editStationModalErrorMessage").innerHTML =
+                    msg_err_no_data;
             }
         });
     });

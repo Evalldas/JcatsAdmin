@@ -62,27 +62,8 @@
 
         
         public function update($data, $id){
-            $check_name_duplicate_query = $this->db->get_where('client', ['name' => $data['name'] && 'id !=', $id]);
-            $check_ip_duplicate_query = $this->db->get_where('client', ['ip' => $data['ip'] && 'id !=', $id]);
-            $this->db->where(['id' => $client_id]);
+            $this->db->where(['id' => $id]);
             $this->db->update('client', $data);
-
-            // If no duplicates found, insert new record into the DB
-            if ($check_name_duplicate_query->num_rows() == 0 && $check_ip_duplicate_query->num_rows() == 0) {
-                $this->db->where(['id' => $client_id]);
-                $this->db->update('client', $data);
-                return $this->db->affected_rows();
-            }
-            elseif($check_name_duplicate_query->num_rows() > 0) {
-                return "duplicate_name"; // If name duplicate found, return err message
-            }
-            elseif($check_ip_duplicate_query->num_rows() > 0) {
-                return "duplicate_ip"; // If name IP found, return err message
-            }
-            else {
-                return $this->db->affected_rows();// Else return empty result for undefined error
-            }
-
             return $this->db->affected_rows();
         }
 

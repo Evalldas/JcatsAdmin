@@ -338,7 +338,7 @@ $(function() {
         event.preventDefault(); // Prevent default action of the form
         var url = $(this).attr('action'); // Get action url from html form
         var post_data = $(this).serialize(); // Serialize data from input fields
-
+        console.log("reach0");
         // Send the POST method
         $.post(url, post_data, function(o) {
 
@@ -347,6 +347,7 @@ $(function() {
              * 1 for succsessful insertion, 2 for name duplicate, 3 for IP duplicate or 0 for undefined error
              * If station has been added, alert about success or error and redirect back to the previous page
              */
+             console.log("reach1");
             if (o.result == 1) {
                 alert(msg_success);
                 window.location.href = "<?=site_url('dashboard/manage_stations')?>";

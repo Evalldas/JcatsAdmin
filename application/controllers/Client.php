@@ -88,15 +88,9 @@
              * 3 for duplicate IP address
              * 0 for undefined error
              */
-            if($result != "duplicate_name" && $result != "duplicate_ip") {
+            if($result) {
                 $this->output->set_output(json_encode(['result' => 1]));
                 return false;
-            }
-            elseif($result == "duplicate_name") {
-                $this->output->set_output(json_encode(['result' => 2]));
-            }
-            elseif($result == "duplicate_ip") {
-                $this->output->set_output(json_encode(['result' => 3]));
             }
             else {
                 $this->output->set_output(json_encode(['result' => 0]));

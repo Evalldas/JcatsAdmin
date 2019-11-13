@@ -63,8 +63,8 @@
             }
         }
 
-        public function update($data, $server_id){
-            $this->db->where(['id' => $server_id]);
+        public function update($data, $id){
+            $this->db->where(['id' => $id]);
             $this->db->update('server', $data);
             return $this->db->affected_rows();
         }

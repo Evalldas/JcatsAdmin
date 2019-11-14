@@ -111,7 +111,7 @@
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
             </div>
             <div class="modal-body">
-                <p id="editStationModalErrorMessage" style="color: red;"></p>
+                <p id="databaseErrorMessage" style="color: red;"></p>
                 <form class="form-large" id="editStationForm" method="post" action="<?=base_url()?>client/update/">
                     <div class="form-group">
                         <label for="stationName">Station name:</label>
@@ -144,18 +144,19 @@
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
             </div>
             <div class="modal-body">
-                <p id="editStationModalErrorMessage" style="color: red;"></p>
-                <form class="form-large" id="addServerForm" method="post" action="<?=base_url()?>server/update/">
+                <p id="databaseErrorMessage" style="color: red;"></p>
+                <form class="form-large" id="editServerForm" method="post" action="<?=base_url()?>server/update/">
                     <div class="form-group">
-                        <label for="stationIdInput">Server ID:</label>
-                        <input id="serverIdInput" class="form-control" type="text" name="id" placeholder="ID">
+                        <label for="serverIdInput">Server ID:</label>
+                        <input id="serverNewIdInput" class="form-control" type="text" name="new-id" placeholder="ID">
+                        <input id="serverIdInput" type="hidden" name="id">
                     </div>
                     <div class="form-group">
-                        <label for="stationNameInput">Server name:</label>
+                        <label for="serverNameInput">Server name:</label>
                         <input id="serverNameInput" class="form-control" type="text" name="name" placeholder="Name">
                     </div>
                     <div class="form-group">
-                        <label for="stationIpInput">IP address:</label>
+                        <label for="serverIpInput">IP address:</label>
                         <input id="serverIpInput" class="form-control" name="ip" required
                             pattern="^([0-9]{1,3}\.){3}[0-9]{1,3}$" placeholder="XXX.XXX.XXX.XXX">
                     </div>
@@ -338,7 +339,6 @@ $(function() {
         event.preventDefault(); // Prevent default action of the form
         var url = $(this).attr('action'); // Get action url from html form
         var post_data = $(this).serialize(); // Serialize data from input fields
-        console.log("reach0");
         // Send the POST method
         $.post(url, post_data, function(o) {
 
@@ -347,7 +347,39 @@ $(function() {
              * 1 for succsessful insertion, 2 for name duplicate, 3 for IP duplicate or 0 for undefined error
              * If station has been added, alert about success or error and redirect back to the previous page
              */
-             console.log("reach1");
+            if (o.result == 1) {
+                alert(msg_success);
+                window.location.href = "<?=site_url('dashboard/manage_stations')?>";
+            } else if (o.result == 2) {
+                alert(msg_name_duplicate);
+            } else if (o.result == 3) {
+                alert(msg_ip_duplicate);
+            } else {
+                alert(msg_undefined_err);
+            }
+        }, 'json');
+
+    });
+
+    /**
+     * This function handles editServer form
+     * 
+     * @param {String}  event       Helps to control the event called by the HTML form
+     * 
+     * @return void
+     */
+    $("#editServerForm").submit(function(event) {
+        event.preventDefault(); // Prevent default action of the form
+        var url = $(this).attr('action'); // Get action url from html form
+        var post_data = $(this).serialize(); // Serialize data from input fields
+        // Send the POST method
+        $.post(url, post_data, function(o) {
+
+            /**
+             * Client controller checks if there are no duplicates and returns either 
+             * 1 for succsessful insertion, 2 for name duplicate, 3 for IP duplicate or 0 for undefined error
+             * If station has been added, alert about success or error and redirect back to the previous page
+             */
             if (o.result == 1) {
                 alert(msg_success);
                 window.location.href = "<?=site_url('dashboard/manage_stations')?>";
@@ -389,12 +421,12 @@ $(document).ready(function() {
                     document.getElementById("stationIdInput").value = response.result[0].id;
                 } else {
                     // Set the error message
-                    document.getElementById("editStationModalErrorMessage").innerHTML =
+                    document.getElementById("databaseErrorMessage").innerHTML =
                         msg_err_no_data;
                 }
             },
             error: function() {
-                document.getElementById("editStationModalErrorMessage").innerHTML =
+                document.getElementById("databaseErrorMessage").innerHTML =
                     msg_err_no_data;
             }
         });
@@ -415,18 +447,19 @@ $(document).ready(function() {
                 // If response is not empty
                 if (response.result[0]) {
                     // Set input field values to the response values
+                    document.getElementById("serverNewIdInput").value = response.result[0].id;
                     document.getElementById("serverIdInput").value = response.result[0].id;
                     document.getElementById("serverNameInput").value = response.result[0]
                         .name;
                     document.getElementById("serverIpInput").value = response.result[0].ip;
                 } else {
                     // Set the error message
-                    document.getElementById("editStationModalErrorMessage").innerHTML =
+                    document.getElementById("databaseErrorMessage").innerHTML =
                         msg_err_no_data;
                 }
             },
             error: function() {
-                document.getElementById("editStationModalErrorMessage").innerHTML =
+                document.getElementById("databaseErrorMessage").innerHTML =
                     msg_err_no_data;
             }
         });

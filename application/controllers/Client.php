@@ -78,24 +78,33 @@
                 'server_id' => $server_id
             ], $id);
 
-            // Set output data type to json
-            $this->output->set_content_type('application/json');
+           // Set output data type to json
+           $this->output->set_content_type('application/json');
 
-            /**
-             * If client_model returns error for duplicate, set output accordingly
-             * 1 for no duplicates
-             * 2 for duplicate name
-             * 3 for duplicate IP address
-             * 0 for undefined error
-             */
-            if($result) {
-                $this->output->set_output(json_encode(['result' => 1]));
-                return false;
-            }
-            else {
-                $this->output->set_output(json_encode(['result' => 0]));
-            }
-
+           /**
+            * If client_model returns error for duplicate, set output accordingly
+            * 1 for no duplicates
+            * 2 for duplicate name
+            * 3 for duplicate IP address
+            * 0 for undefined error
+            */
+           if($result != "duplicate_name" && $result != "duplicate_ip") {
+               $this->output->set_output(json_encode(['result' => 1]));
+               return false;
+           }
+           elseif($result == "duplicate_name") {
+               $this->output->set_output(json_encode(['result' => 2]));
+               return false;
+           }
+           elseif($result == "duplicate_ip") {
+               $this->output->set_output(json_encode(['result' => 3]));
+               return false;
+           }
+           else {
+               $this->output->set_output(json_encode(['result' => 0]));
+               return false;
+           }
+            
         }
     
         public function delete() {

@@ -64,13 +64,33 @@
         }
 
         public function update($data, $id){
-            $this->db->where(['id' => $id]);
-            $this->db->update('server', $data);
-            return $this->db->affected_rows();
+             // Querys to check for duplicates. If query returns more than 0, that means duplicate has been found
+             $check_name_duplicate_query = $this->db->get_where('server', ['name' => $data['name'], 'id !=' => $id]);
+             $check_ip_duplicate_query = $this->db->get_where('server', ['ip' => $data['ip'], 'id !=' => $id]);
+             $check_id_duplicate_query = $this->db->get_where('server', ['id' => $data['id'], 'id !=' => $id]);
+             
+             // If no duplicates found, insert new record into the DB
+             if ($check_name_duplicate_query->num_rows() == 0 && $check_ip_duplicate_query->num_rows() == 0 && $check_id_duplicate_query->num_rows() == 0) {
+                $this->db->where(['id' => $id]);
+                $this->db->update('server', $data);
+                return $this->db->affected_rows();
+             }
+             elseif($check_name_duplicate_query->num_rows() > 0) {
+                 return "duplicate_name"; // If name duplicate found, return err message
+             }
+             elseif($check_ip_duplicate_query->num_rows() > 0) {
+                 return "duplicate_ip"; // If name IP found, return err message
+             }
+             elseif($check_id_duplicate_query->num_rows() > 0) {
+                 return "duplicate_id"; // If name IP found, return err message
+             }
+             else {
+                return $this->db->affected_rows(); // Else return empty result for undefined error
+             }
         }
 
-        public function delete($server_id){
-            $this->db->delete('server', array('id' => $server_id));
+        public function delete($id){
+            $this->db->delete('server', array('id' => $id));
             return $this->db->affected_rows();
         }
 

@@ -47,3 +47,9 @@
   .server-info-icon:hover .server-info-message {
     visibility: visible;
   }
+
+  .btn {
+    border-radius: 0px;
+    padding-left: 15px;
+    padding-right: 15px;;
+  }

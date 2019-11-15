@@ -29,7 +29,7 @@
                     <td><?=$client["id"]?></td>
                     <td><?=$client["name"]?></td>
                     <td><?=$client["ip"]?></td>
-                    <td><?=$servers[$client["server_id"] - 1]["name"]?></td>
+                    <td><?=$servers[$client["server_id"]]["name"]?></td>
                     <td><input form="clientTaskForm" type="checkbox" name="clientCheckbox[]" value="<?=$client['ip']?>"><br/></td>
                 </tr>
             <?php }?>

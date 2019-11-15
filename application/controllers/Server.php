@@ -36,7 +36,7 @@
             $id = $this->input->post('id');  
 
             // Parse data array to the server_model func insert();
-            $result = $this->Server_model->insert([
+            $result = $this->server_model->insert([
                 'name' => $name,
                 'ip' => $ip,
                 'id' => $id
@@ -115,7 +115,7 @@
     
         public function delete() {
             $id = $this->input->post('id');
-            $result = $this->Server_model->delete($id);
+            $result = $this->server_model->delete($id);
     
             redirect(base_url('dashboard/manage_stations/'));
         }

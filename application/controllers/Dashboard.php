@@ -11,7 +11,6 @@
         }
 
         public function index($page = 'dashboard') {
-            
             $data['servers'] = $this->Server_model->get();
             $data['clients'] = $this->Client_model->get();
             $this->load->view('header_view');

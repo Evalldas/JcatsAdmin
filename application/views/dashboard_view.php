@@ -17,7 +17,6 @@
         <table class="table">
             <thead class="thead-dark">
                 <tr>
-                    <th>ID</th>
                     <th>Pavadinimas</th>
                     <th>IP adresas</th>
                     <th>Serveris</th>
@@ -26,30 +25,10 @@
             </thead>
             <?php foreach($clients as $client) {?>
                 <tr>
-                    <td><?=$client["id"]?></td>
                     <td><?=$client["name"]?></td>
                     <td><?=$client["ip"]?></td>
                     <td><?=$servers[$client["server_id"]]["name"]?></td>
-                    <td><input form="clientTaskForm" type="checkbox" name="clientCheckbox[]" value="<?=$client['ip']?>"><br/></td>
-                </tr>
-            <?php }?>
-        </table>
-    </div>
-    <div class="col-lg-5">
-        <h3 class="col-title">Serveriai</h3>
-        <table class="table">
-            <thead class="thead-dark">
-                <tr>
-                    <th>ID</th>
-                    <th>Pavadinimas</th>
-                    <th>IP adresas</th>
-                </tr>
-            </thead>
-            <?php foreach($servers as $server) {?>
-                <tr>
-                    <td><?=$server["id"]?></td>
-                    <td><?=$server["name"]?></td>
-                    <td><?=$server["ip"]?></td>
+                    <td><input form="clientTaskForm" type="checkbox" name="clientCheckbox[]" value="<?=$client['id']?>"><br/></td>
                 </tr>
             <?php }?>
         </table>

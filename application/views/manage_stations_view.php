@@ -31,9 +31,13 @@
                 <tr>
                     <th>Name</th>
                     <th>IP address</th>
-                    <th>Server <span class="server-info-icon"><span class="fas fa-info-circle"></span><span
-                                class="server-info-message">This column shows
-                                what server the station is linked to</span></span></th>
+                    <th>Server
+                        <span class="server-info-icon">
+                            <span class="fas fa-info-circle"></span>
+                            <span class="server-info-message">This column shows
+                                what server the station is linked to</span>
+                        </span>
+                    </th>
                     <th></th>
                     <th></th>
                 </tr>
@@ -241,5 +245,5 @@
 
 <!-- Be aware, JavaScript code below -->
 <script type="text/javascript">
-    var base_url = "<?=base_url()?>";
+var base_url = "<?=base_url()?>";
 </script>

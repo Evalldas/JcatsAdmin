@@ -73,6 +73,7 @@
                     <th>ID</th>
                     <th>Name</th>
                     <th>IP address</th>
+                    <th>Domain</th>
                     <th></th>
                     <th></th>
                 </tr>
@@ -83,6 +84,7 @@
                 <td><?=$server["id"]?></td>
                 <td><?=$server["name"]?></td>
                 <td><?=$server["ip"]?></td>
+                <td><?=$server["domain_name"]?></td>
                 <td><button class="openEditServerModal btn btn-primary" relid="<?=$server['id']?>" data-toggle="modal"
                         data-target="#editServerModal">Edit</button>
                 <td>
@@ -164,6 +166,10 @@
                         <input id="serverIpInput" class="form-control" name="ip" required
                             pattern="^([0-9]{1,3}\.){3}[0-9]{1,3}$" placeholder="XXX.XXX.XXX.XXX">
                     </div>
+                    <div class="form-group">
+                        <label for="serverDomainNameInput">Domain name:</label>
+                        <input id="serverDomainNameInput" class="form-control" name="domain_name" placeholder="Domain name">
+                    </div>
                     <button type="submit" name="submit" class="btn btn-primary btn-modal">Submit</button>
                 </form>
             </div>
@@ -231,6 +237,10 @@
                         <label for="stationIpInput">IP address:</label>
                         <input class="form-control" name="ip" required pattern="^([0-9]{1,3}\.){3}[0-9]{1,3}$"
                             placeholder="XXX.XXX.XXX.XXX">
+                    </div>
+                    <div class="form-group">
+                        <label for="stationDomainNameInput">Domain name:</label>
+                        <input class="form-control" name="domain_name" placeholder="Domain name">
                     </div>
                     <button type="submit" name="submit" class="btn btn-primary btn-modal">Submit</button>
                 </form>

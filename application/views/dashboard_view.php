@@ -1,7 +1,6 @@
 <div class="task-menu">
     <form method="POST" id="clientTaskForm" action="<?=base_url()?>ClientTasker/">
-        <input type="password" name="password" placeholder="Slaptažodis">
-        <button class="btn btn-primary" name="task" value="reboot">Restart</button><br><br>
+        <button class="btn btn-primary" name="task" value="reboot">Restart</button>
         <select name="serverIp" class="btn btn-outline-secondary">
             <?php foreach($servers as $server) {?>
             <option value="<?=$server['ip'];?>"><?=$server['name'];?></option>
@@ -27,7 +26,7 @@
             <th>
                 <label for="checkbox" class="checkbox">
                     <input type="checkbox" onClick="toggle(this)" style="margin-right: 5px;" />
-                    Check all
+                    Select all
                 </label>
             </th>
         </tr>
@@ -45,6 +44,23 @@
     </tr>
     <?php }?>
 </table>
+
+<div class="modal fade" role="dialog">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Password</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input form="clientTaskForm" type="password" name="password" placeholder="Password">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script language="JavaScript">
 function toggle(source) {

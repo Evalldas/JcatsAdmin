@@ -33,13 +33,15 @@
             // Get data from form through POST method
             $name = $this->input->post('name');
             $ip = $this->input->post('ip');
-            $id = $this->input->post('id');  
+            $id = $this->input->post('id');
+            $domain_name = $this->input->post('domain_name');
 
             // Parse data array to the server_model func insert();
             $result = $this->server_model->insert([
                 'name' => $name,
                 'ip' => $ip,
-                'id' => $id
+                'id' => $id,
+                'domain_name' => $domain_name
             ]);
             
             // Set output data type to json
@@ -72,15 +74,24 @@
 
         }
     
+        /**
+         * update
+         *
+         * @return void
+         */
         public function update() {
+            
             $new_id = $this->input->post('new-id');
             $id = $this->input->post('id');
             $name = $this->input->post('name');
             $ip = $this->input->post('ip');
+            $domain_name = $this->input->post('domain_name');
+
             $result = $this->server_model->update([
                 'id' => $new_id,
                 'name' => $name,
-                'ip' => $ip
+                'ip' => $ip,
+                'domain_name' => $domain_name
             ], $id);
     
             // Set output data type to json

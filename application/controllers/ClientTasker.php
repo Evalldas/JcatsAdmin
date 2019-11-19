@@ -5,6 +5,7 @@
             parent::__construct();
             $this->load->helper(array('form', 'url'));
             $this->load->helper('array');
+            $this->load->model('Client_model', 'client_model');
             set_include_path(get_include_path() . PATH_SEPARATOR . APPPATH . 'third_party/phpseclib');
             include(APPPATH . 'third_party/phpseclib/Net/SSH2.php');
             
@@ -73,6 +74,16 @@
                     exit('Login Failed');
                 }
                 $ssh->exec('/home/jcats/jcats14.0/utils/change_server.sh ' );
+            }
+        }
+
+        public function getDomainInfo() {
+            $clients = $this->client_model->get();
+            echo exec("ping -q -c1 193.170.9.109 >/dev/null 2>&1 ; echo $?");
+            exec("ping -c 1 193.170.9.109", $output, $status);
+            echo $status;
+            foreach ($clients as $client) {
+                $host = $client["ip"];
             }
         }
     }

@@ -210,6 +210,7 @@ $(document).ready(function() {
                     document.getElementById("serverNameInput").value = response.result[0]
                         .name;
                     document.getElementById("serverIpInput").value = response.result[0].ip;
+                    document.getElementById("serverDomainNameInput").value = response.result[0].domain_name;
                 } else {
                     // Set the error message
                     document.getElementById("databaseErrorMessage").innerHTML =

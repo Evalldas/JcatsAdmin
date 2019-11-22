@@ -6,6 +6,7 @@
             $this->load->helper(array('form', 'url'));
             $this->load->helper('array');
             $this->load->model('Client_model', 'client_model');
+            $this->load->model('Server_model', 'server_model');
             set_include_path(get_include_path() . PATH_SEPARATOR . APPPATH . 'third_party/phpseclib');
             include(APPPATH . 'third_party/phpseclib/Net/SSH2.php');
             
@@ -34,56 +35,66 @@
             }
         }
 
-        public function reboot($clients, $password) {
-            foreach($clients as $client) {
-                $ssh = new Net_SSH2($client);
+         /**
+          * updateStationInfo
+          *
+          * @param  mixed $station_data
+          * @param  mixed $password
+          *
+          * @return void
+          */
+         public function updateStationInfo($station_data, $password) {
+             
+             // Variables
+             $domain_name = trim($this->getDomainInfo($station_data['ip'], $password));
+             $server_data = $this->server_model->getServerByDomainName($domain_name);
+
+             $result = $this->client_model->update([
+                'name' => $station_data['name'],
+                'ip' => $station_data['ip'],
+                'server_id' => $server_data[0]['id']
+            ], $station_data['id']);
+
+         }
+        
+        /**
+         * getDomainInfo
+         * Gets the name of the stations domain
+         *
+         * @param  mixed $host IP address of the station
+         * @param  mixed $password ssh password
+         *
+         * @return void
+         */
+        public function getDomainInfo($host, $password) {
+            if($this->ping($host)) {
+                $ssh = new Net_SSH2($host);
                 if (!$ssh->login('root', $password)) {
                     exit('Login Failed');
                 }
-                $ssh->exec('reboot');
+                $domain_name = $ssh->exec('domainname');
+                return $domain_name;
             }
-
-        }
-
-        public function installJcats($client, $password, $server_ip) {
-            foreach($clients as $client) {
-                $ssh = new Net_SSH2($client['ip']);
-                if (!$ssh->login('root', $password)) {
-                    exit('Login Failed');
-                }
-                $ssh->exec('mkdir /home/jcats');
-                $ssh->exec('mount '.$server_ip.'://home/jcats');
-                $ssh->exec('/home/jcats/jcats14.0/utils/quick_start_client.sh -y');
+            else {
+                
             }
         }
-
-        public function removeJcats($client, $password) {
-            foreach($clients as $client) {
-                $ssh = new Net_SSH2($client['ip']);
-                if (!$ssh->login('root', $password)) {
-                    exit('Login Failed');
-                }
-                $ssh->exec('/home/jcats/jcats14.0/utils/putback.client -y');
+        
+        /**
+         * ping IP addres to check if the host is up.
+         * Returns true if ping is successfull and false if otherwise
+         *
+         * @param  mixed $host IP addres you want to ping
+         *
+         * @return void
+         */
+        public function ping($host, $timeout = "0.2") {
+            exec("timeout $timeout ping -c1 $host", $output, $result);  // Set the timeout for 0.2 seconds for a quicker ping
+            if($result === 0) {
+                return true;
             }
-        }
-
-        public function changeServer($client, $password, $server_ip) {
-            foreach($clients as $client) {
-                $ssh = new Net_SSH2($client['ip']);
-                if (!$ssh->login('root', $password)) {
-                    exit('Login Failed');
-                }
-                $ssh->exec('/home/jcats/jcats14.0/utils/change_server.sh ' );
-            }
-        }
-
-        public function getDomainInfo() {
-            $clients = $this->client_model->get();
-            echo exec("ping -q -c1 193.170.9.109 >/dev/null 2>&1 ; echo $?");
-            exec("ping -c 1 193.170.9.109", $output, $status);
-            echo $status;
-            foreach ($clients as $client) {
-                $host = $client["ip"];
+            else {
+                return false;
             }
         }
     }

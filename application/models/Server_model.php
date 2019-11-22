@@ -27,6 +27,21 @@
             return $query->result_array(); // If failed to do anything, return empty result_array
         }
 
+        
+        /**
+         * getServerByDomainName
+         * Returns array with server data given only the domain name
+         *
+         * @param  mixed $domain_name
+         *
+         * @return void
+         */
+        public function getServerByDomainName($domain_name) {
+            
+            $query = $this->db->get_where('server', ['domain_name' => $domain_name]);
+            return $query->result_array();
+        }
+
         /**
          * insert
          *

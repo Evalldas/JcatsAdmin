@@ -28,6 +28,7 @@
         }
 
         
+        
         /**
          * insert
          *
@@ -65,7 +66,7 @@
             // Querys to check for duplicates. If query returns more than 0, that means duplicate has been found
             $check_name_duplicate_query = $this->db->get_where('client', ['name' => $data['name'], 'id !=' => $id]);
             $check_ip_duplicate_query = $this->db->get_where('client', ['ip' => $data['ip'], 'id !=' => $id]);
-            
+
             // If no duplicates found, insert new record into the DB
             if ($check_name_duplicate_query->num_rows() == 0 && $check_ip_duplicate_query->num_rows() == 0) {
                 $this->db->where(['id' => $id]);

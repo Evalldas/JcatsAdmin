@@ -6,6 +6,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <!-- Bootstrap Core CSS -->
     <link href="<?=base_url()?>/public/css/bootstrap.min.css" rel="stylesheet">
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" type="text/css" href="<?=base_url()?>public/DataTables/datatables.min.css"/>
     <!-- Custom CSS -->
     <link href="<?=base_url()?>/public/css/main.css" rel="stylesheet">
     <!-- Font Awesome -->
@@ -15,6 +17,8 @@
     <link rel="icon" href="<?=base_url()?>/public/icons/favicon.ico">
     <!-- jQuery library -->
     <script language="JavaScript" type="text/javascript" src="<?=base_url()?>public/js/jquery.min.js"></script>
+    <!-- DataTables JS -->
+    <script type="text/javascript" src="<?=base_url()?>public/DataTables/datatables.min.js"></script>
     <!-- custom JS code -->
     <script language="JavaScript" type="text/javascript" src="<?=base_url()?>public/js/custom.js"></script>
 </head>

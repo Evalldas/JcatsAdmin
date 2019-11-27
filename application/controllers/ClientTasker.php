@@ -87,6 +87,9 @@
          * @param  mixed $host IP addres you want to ping
          *
          * @return void
+         * 
+         * TODO: change the commad to: #nc -z hostname 22 > /dev/null
+         * 
          */
         public function ping($host, $timeout = "0.2") {
             exec("timeout $timeout ping -c1 $host", $output, $result);  // Set the timeout for 0.2 seconds for a quicker ping

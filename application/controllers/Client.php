@@ -3,6 +3,7 @@
         public function __construct(){
             parent::__construct();
             $this->load->model('Client_model', 'client_model');
+            $this->load->model('Server_model', 'server_model');
         }
 
         /**
@@ -33,7 +34,6 @@
             $client_name = $this->input->post('name');
             $client_ip = $this->input->post('ip');
             $server_id = 0; // Byt default given server id 0. Later updates automatically when station connects to the network
-
             // Parse data array to the client_model func insert();
             $result = $this->client_model->insert([
                 'name' => $client_name,

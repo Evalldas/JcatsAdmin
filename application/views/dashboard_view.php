@@ -31,20 +31,6 @@
             </th>
         </tr>
     </thead>
-    <!--
-    <tbody>
-    <tr>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td>
-            <label for="checkbox" class="checkbox">
-                <input form="clientTaskForm" type="checkbox" name="clientCheckbox[]">
-            </label>
-        </td>
-    </tr>
-    </tbody>
-    -->
 </table>
 
 <div class="modal fade" role="dialog">
@@ -78,23 +64,66 @@ function toggle(source) {
  * DataTables code
  */
 $(document).ready(function() {
-    var url = base_url + "client/get/"; // Action URL
+    /**
+     * Define action URL's
+     */
+    var getClientUrl = base_url + "client/get/";
+    var getServerUrl = base_url + "server/get/";
+
+    /**
+     * AJAX request to fill datatable
+     */
     $.ajax({
         method: 'GET',
-        url: url,
+        url: getClientUrl,
         datatype: 'json',
-        success: function (response) {
-            $('#stationTableDashboard').DataTable( {
+        success: function(response) {
+            // On successful connection do the DataTables magic
+            $('#stationTableDashboard').DataTable({
                 paging: false,
                 processing: true,
                 data: response.result,
-                columns: [
-                { "data": "name" },
-                { "data": "ip" },
-                { "data": "server_id" }
-        ]
+                // Fill columns with the data
+                columns: [{
+                        "data": "name"
+                    },
+                    {
+                        "data": "ip"
+                    },
+                    {
+                        // We want server name, not ID
+                        "data": "server_id",
+                        // Render new cell input
+                        render: function(data, type, full, meta) {
+                            var currentCell = $("#stationTableDashboard")
+                            .DataTable().cells({
+                                "row": meta.row,
+                                "column": meta.col
+                            }).nodes(0);
+                            $.ajax({
+                                url: getServerUrl,
+                                data: {
+                                    id: data
+                                },
+                                method: 'GET'
+                            }).done(function(response) {
+                                $(currentCell).html(response.result[0]
+                                .name);
+                            });
+                            return null;
+                        }
+                    },
+                    {
+                        // Column with checkboxes
+                        orderable: false,
+                        render: function() {
+                            return '<label for="checkbox" class="checkbox"><input form="clientTaskForm" type="checkbox" name="clientCheckbox[]"></label>';
+                        }
+                    }
+                ]
             });
         }
     });
+
 });
 </script>

@@ -11,7 +11,7 @@
         <button class="btn btn-primary" name="task" value="changeServer">Change server</button>
     </form>
 </div>
-<table class="table">
+<table id="stationTableDashboard" class="table" class="display">
     <thead class="thead-dark">
         <tr>
             <th>Name</th>
@@ -31,18 +31,20 @@
             </th>
         </tr>
     </thead>
-    <?php foreach($clients as $client) {?>
+    <!--
+    <tbody>
     <tr>
-        <td><?=$client["name"]?></td>
-        <td><?=$client["ip"]?></td>
-        <td><?=$servers[$client["server_id"]]["name"]?></td>
+        <td></td>
+        <td></td>
+        <td></td>
         <td>
             <label for="checkbox" class="checkbox">
-                <input form="clientTaskForm" type="checkbox" name="clientCheckbox[]" value="<?=$client['id']?>">
+                <input form="clientTaskForm" type="checkbox" name="clientCheckbox[]">
             </label>
         </td>
     </tr>
-    <?php }?>
+    </tbody>
+    -->
 </table>
 
 <div class="modal fade" role="dialog">
@@ -63,10 +65,36 @@
 </div>
 
 <script language="JavaScript">
+var base_url = "<?=base_url();?>";
+
 function toggle(source) {
     checkboxes = document.getElementsByName('clientCheckbox[]');
     for (var i = 0, n = checkboxes.length; i < n; i++) {
         checkboxes[i].checked = source.checked;
     }
 }
+
+/**
+ * DataTables code
+ */
+$(document).ready(function() {
+    var url = base_url + "client/get/"; // Action URL
+    $.ajax({
+        method: 'GET',
+        url: url,
+        datatype: 'json',
+        success: function (response) {
+            $('#stationTableDashboard').DataTable( {
+                paging: false,
+                processing: true,
+                data: response.result,
+                columns: [
+                { "data": "name" },
+                { "data": "ip" },
+                { "data": "server_id" }
+        ]
+            });
+        }
+    });
+});
 </script>

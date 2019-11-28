@@ -19,7 +19,8 @@
             $server_ip  = $this->input->post('serverIp');
             switch($task) {
                 case "reboot":
-                $this->reboot($clients, $password);
+                //$this->reboot($clients, $password);
+                print_r($clients);
                     break;
                 case "installJcats":
                 $this->installJcats($clients, $password, $server_ip);
@@ -32,6 +33,30 @@
                     break;
                 default:
                 echo "No recognisible input given";
+            }
+        }
+
+
+        public function testReboot(){
+            $this->reboot("193.170.9.109", "Dragon01");
+        }
+
+        public function reboot() {
+            $stations = $this->input->post();
+            echo $station;
+            foreach ($stations as $station) {
+                echo $station;
+                if($this->ping($station['ip'])) {
+                    $ssh = new Net_SSH2($station['ip']);
+                    if (!$ssh->login('root', 'Dragon01')) {
+                        exit('Login Failed');
+                    }
+                    $ssh->exec('reboot');
+                    return "success";
+                }
+                else {
+                    return "Could not connect";
+                }
             }
         }
 
@@ -76,7 +101,7 @@
                 return $domain_name;
             }
             else {
-                
+                return "Could not connect";
             }
         }
         

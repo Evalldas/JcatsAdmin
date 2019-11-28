@@ -1,6 +1,8 @@
 <div class="task-menu">
+    <button id="selectAllRowsButton">Select</button>
+    <button id="rebootButton" action="<?=base_url()?>ClientTasker/reboot">Reboot</button>
     <form method="POST" id="clientTaskForm" action="<?=base_url()?>ClientTasker/">
-        <button class="btn btn-primary" name="task" value="reboot">Restart</button>
+        <button class="btn btn-primary" name="task" value="reboot">Reboot</button>
         <select name="serverIp" class="btn btn-outline-secondary">
             <?php foreach($servers as $server) {?>
             <option value="<?=$server['ip'];?>"><?=$server['name'];?></option>
@@ -79,7 +81,10 @@ $(document).ready(function() {
         datatype: 'json',
         success: function(response) {
             // On successful connection do the DataTables magic
-            $('#stationTableDashboard').DataTable({
+            var stationTable = $('#stationTableDashboard').DataTable({
+                select: {
+                    style: 'multi'
+                },
                 paging: false,
                 processing: true,
                 data: response.result,
@@ -107,8 +112,9 @@ $(document).ready(function() {
                                 },
                                 method: 'GET'
                             }).done(function(response) {
-                                $(currentCell).html(response.result[0]
-                                .name);
+                                $(currentCell).html(response.result[0].name);
+                                $(currentCell).attr('name="server_id"');
+                                $(meta.row).attr('form="clientTaskForm"');
                             });
                             return null;
                         }
@@ -122,8 +128,23 @@ $(document).ready(function() {
                     }
                 ]
             });
+            $('#selectAllRowsButton').click( function () {
+                console.log( stationTable.rows('.selected').data());
+                //stationTable.rows().select();
+            });
+            $('#rebootButton').click( function () {
+                event.preventDefault();
+                var data = stationTable.rows('.selected').data();
+                var post_data;
+                data.forEach(function(element) {
+                    post_data.push(element);
+                });
+                var url = $(this).attr('action');
+                console.log(post_data);
+                $.post(url, post_data);
+            });
+            
         }
     });
-
 });
 </script>

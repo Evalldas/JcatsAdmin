@@ -37,18 +37,15 @@
         }
 
 
-        public function testReboot(){
-            $this->reboot("193.170.9.109", "Dragon01");
-        }
-
         public function reboot() {
-            $stations = $this->input->post();
-            echo $station;
+            $stations = $this->input->post('stations');
+            $password = $this->input->post('password');
+            print_r($stations);
             foreach ($stations as $station) {
-                echo $station;
+                print_r($station);
                 if($this->ping($station['ip'])) {
                     $ssh = new Net_SSH2($station['ip']);
-                    if (!$ssh->login('root', 'Dragon01')) {
+                    if (!$ssh->login('root', $password)) {
                         exit('Login Failed');
                     }
                     $ssh->exec('reboot');
@@ -58,6 +55,10 @@
                     return "Could not connect";
                 }
             }
+            // Set output data type to json
+            $this->output->set_content_type('application/json');
+            $this->output->set_output(json_encode(['result' => $stations]));
+            return null;
         }
 
          /**

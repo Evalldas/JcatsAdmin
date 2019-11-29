@@ -12,6 +12,10 @@
     <link href="<?=base_url()?>/public/css/main.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link href="<?=base_url()?>/public/fontawesome/css/all.css" rel="stylesheet">
+    <!-- AlertifyJS css -->
+    <link rel="stylesheet" href="<?=base_url()?>public/alertify/css/alertify.min.css" />
+    <!-- AlertifyJS theme -->
+    <link rel="stylesheet" href="<?=base_url()?>public/alertify/css/themes/default.min.css" />
 
     <!-- Custom JCATS icon -->
     <link rel="icon" href="<?=base_url()?>/public/icons/favicon.ico">

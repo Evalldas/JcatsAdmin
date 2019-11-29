@@ -1,5 +1,4 @@
 <div class="task-menu">
-    <button id="selectAllRowsButton">Select</button>
     <button id="rebootButton" action="<?=base_url()?>ClientTasker/reboot">Reboot</button>
     <form method="POST" id="clientTaskForm" action="<?=base_url()?>ClientTasker/">
         <button class="btn btn-primary" name="task" value="reboot">Reboot</button>
@@ -15,6 +14,7 @@
 </div>
 <table id="stationTableDashboard" class="table" class="display">
     <thead class="thead-dark">
+    <button id="selectAllRowsButton">Select</button>
         <tr>
             <th>Name</th>
             <th>IP address</th>
@@ -128,20 +128,24 @@ $(document).ready(function() {
                     }
                 ]
             });
+
             $('#selectAllRowsButton').click( function () {
-                console.log( stationTable.rows('.selected').data());
-                //stationTable.rows().select();
+                stationTable.rows().select();
             });
+
             $('#rebootButton').click( function () {
                 event.preventDefault();
                 var data = stationTable.rows('.selected').data();
-                var post_data;
-                data.forEach(function(element) {
-                    post_data.push(element);
+                var password =  alertify.prompt('Password: ').set('type', 'password'); 
+
+                var post_data = {stations: [], password: password};
+                $.each(data, function(i, item) {
+                    post_data.stations.push(item);
                 });
                 var url = $(this).attr('action');
-                console.log(post_data);
-                $.post(url, post_data);
+                $.post(url, post_data, function (o) {
+
+                }, 'json');
             });
             
         }

@@ -14,7 +14,7 @@
 </div>
 <table id="stationTableDashboard" class="table" class="display">
     <thead class="thead-dark">
-    <button id="selectAllRowsButton">Select</button>
+        <button id="selectAllRowsButton">Select</button>
         <tr>
             <th>Name</th>
             <th>IP address</th>
@@ -72,6 +72,11 @@ $(document).ready(function() {
     var getClientUrl = base_url + "client/get/";
     var getServerUrl = base_url + "server/get/";
 
+    var password = function() {
+        var password = alertify.prompt('Password: ').set('type', 'password');
+        return password;
+    }
+
     /**
      * AJAX request to fill datatable
      */
@@ -101,10 +106,10 @@ $(document).ready(function() {
                         // Render new cell input
                         render: function(data, type, full, meta) {
                             var currentCell = $("#stationTableDashboard")
-                            .DataTable().cells({
-                                "row": meta.row,
-                                "column": meta.col
-                            }).nodes(0);
+                                .DataTable().cells({
+                                    "row": meta.row,
+                                    "column": meta.col
+                                }).nodes(0);
                             $.ajax({
                                 url: getServerUrl,
                                 data: {
@@ -112,7 +117,8 @@ $(document).ready(function() {
                                 },
                                 method: 'GET'
                             }).done(function(response) {
-                                $(currentCell).html(response.result[0].name);
+                                $(currentCell).html(response.result[0]
+                                    .name);
                                 $(currentCell).attr('name="server_id"');
                                 $(meta.row).attr('form="clientTaskForm"');
                             });
@@ -129,26 +135,32 @@ $(document).ready(function() {
                 ]
             });
 
-            $('#selectAllRowsButton').click( function () {
+            $('#selectAllRowsButton').click(function() {
                 stationTable.rows().select();
             });
 
-            $('#rebootButton').click( function () {
+            $('#rebootButton').click(function() {
                 event.preventDefault();
                 var data = stationTable.rows('.selected').data();
-                var password =  alertify.prompt('Password: ').set('type', 'password'); 
-
-                var post_data = {stations: [], password: password};
-                $.each(data, function(i, item) {
-                    post_data.stations.push(item);
-                });
                 var url = $(this).attr('action');
-                $.post(url, post_data, function (o) {
+                alertify.prompt('Please enter stations root password').set({'onok': function(evt, password) {
+                    var post_data = {
+                        stations: [],
+                        password: password
+                    };
+                    $.each(data, function(i, item) {
+                        post_data.stations.push(item);
+                    });
+                    console.log(post_data);
+                    console.log(url);
+                    $.post(url, post_data, function(o) {
+                        console.log("got this far");
+                    }, 'json');
+                }, 'type': 'password', 'title': 'Password'});
 
-                }, 'json');
             });
-            
         }
     });
+
 });
 </script>

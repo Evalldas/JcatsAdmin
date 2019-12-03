@@ -23,6 +23,8 @@
     <script language="JavaScript" type="text/javascript" src="<?=base_url()?>public/js/jquery.min.js"></script>
     <!-- DataTables JS -->
     <script type="text/javascript" src="<?=base_url()?>public/DataTables/datatables.min.js"></script>
+    <!-- DataTables plugins -->
+    <script type="text/javascript" src="<?=base_url()?>public/DataTables/Plugins/NaturalSorting.js"></script>
     <!-- custom JS code -->
     <script language="JavaScript" type="text/javascript" src="<?=base_url()?>public/js/custom.js"></script>
 </head>

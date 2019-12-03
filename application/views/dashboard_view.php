@@ -1,20 +1,34 @@
-<div class="task-menu">
-    <button id="rebootButton" action="<?=base_url()?>ClientTasker/reboot">Reboot</button>
-    <form method="POST" id="clientTaskForm" action="<?=base_url()?>ClientTasker/">
-        <button class="btn btn-primary" name="task" value="reboot">Reboot</button>
-        <select name="serverIp" class="btn btn-outline-secondary">
-            <?php foreach($servers as $server) {?>
-            <option value="<?=$server['ip'];?>"><?=$server['name'];?></option>
-            <?php }?>
-        </select>
-        <button class="btn btn-primary" name="task" value="installJcats">Install Jcats</button>
-        <button class="btn btn-primary" name="task" value="removeJcats">Remove Jcats</button>
-        <button class="btn btn-primary" name="task" value="changeServer">Change server</button>
-    </form>
+<div class="task-menu row">
+    <div class="col-lg-2 task-menu-group">
+        <label for="tableProperties">Table actions</label><br>
+        <div class="btn-group" role="group">
+            <button class="btn btn-primary" id="selectAllRowsButton">Select All</button>
+            <button class="btn btn-primary" id="deselectAllRowsButton">Deselect All</button>
+        </div>
+    </div>
+    <div class="col-lg-2 task-menu-group">
+        <label for="quickCommands">Quick commands</label><br>
+        <div class="btn-group" role="group">
+            <button class="btn btn-primary" id="rebootButton"
+                action="<?=base_url()?>ClientTasker/reboot">Reboot</button>
+        </div>
+    </div>
+    <div class="col-lg-8 task-menu-group">
+        <label for="jcatsProperties">Jcats actions</label><br>
+        <div class="btn-group" role="group">
+            <select name="serverIp" class="btn btn-secondary">
+                <?php foreach($servers as $server) {?>
+                <option value="<?=$server['ip'];?>"><?=$server['name'];?></option>
+                <?php }?>
+            </select>
+            <button class="btn btn-primary" name="task" value="installJcats">Install Jcats</button>
+            <button class="btn btn-primary" name="task" value="removeJcats">Remove Jcats</button>
+            <button class="btn btn-primary" name="task" value="changeServer">Change server</button>
+        </div>
+    </div>
 </div>
 <table id="stationTableDashboard" class="table" class="display">
     <thead class="thead-dark">
-        <button id="selectAllRowsButton">Select</button>
         <tr>
             <th>Name</th>
             <th>IP address</th>
@@ -24,12 +38,6 @@
                     <span class="server-info-message">This column shows
                         what server the station is linked to</span>
                 </span>
-            </th>
-            <th>
-                <label for="checkbox" class="checkbox">
-                    <input type="checkbox" onClick="toggle(this)" style="margin-right: 5px;" />
-                    Select all
-                </label>
             </th>
         </tr>
     </thead>
@@ -53,14 +61,8 @@
 </div>
 
 <script language="JavaScript">
+// dectale base_url for cleaner url's
 var base_url = "<?=base_url();?>";
-
-function toggle(source) {
-    checkboxes = document.getElementsByName('clientCheckbox[]');
-    for (var i = 0, n = checkboxes.length; i < n; i++) {
-        checkboxes[i].checked = source.checked;
-    }
-}
 
 /**
  * DataTables code
@@ -93,6 +95,10 @@ $(document).ready(function() {
                 paging: false,
                 processing: true,
                 data: response.result,
+                columnDefs: [{
+                    type: 'natural',
+                    targets: [0, 1, 2]
+                }],
                 // Fill columns with the data
                 columns: [{
                         "data": "name"
@@ -124,39 +130,56 @@ $(document).ready(function() {
                             });
                             return null;
                         }
-                    },
-                    {
-                        // Column with checkboxes
-                        orderable: false,
-                        render: function() {
-                            return '<label for="checkbox" class="checkbox"><input form="clientTaskForm" type="checkbox" name="clientCheckbox[]"></label>';
-                        }
                     }
                 ]
             });
 
+            // Select all the rows in the table
             $('#selectAllRowsButton').click(function() {
                 stationTable.rows().select();
             });
 
+            // Deselect all the rows in the table
+            $('#deselectAllRowsButton').click(function() {
+                stationTable.rows().deselect();
+            });
+
+            /**
+             * Handle the Reboot button
+             */
             $('#rebootButton').click(function() {
-                event.preventDefault();
-                var data = stationTable.rows('.selected').data();
-                var url = $(this).attr('action');
-                alertify.prompt('Please enter stations root password').set({'onok': function(evt, password) {
-                    var post_data = {
-                        stations: [],
-                        password: password
-                    };
-                    $.each(data, function(i, item) {
-                        post_data.stations.push(item);
-                    });
-                    console.log(post_data);
-                    console.log(url);
-                    $.post(url, post_data, function(o) {
-                        console.log("got this far");
-                    }, 'json');
-                }, 'type': 'password', 'title': 'Password'});
+                event.preventDefault(); // Prevent default action
+                var data = stationTable.rows('.selected')
+                    .data(); // Get data from the selected rows
+                var url = $(this).attr('action'); // Get the URL from buttons attribute
+                // Prompt password form to confirm the action and parse the password to POST request
+                alertify.prompt('Please enter stations root password').set({
+                    // If user pressed OK
+                    'onok': function(evt, password) {
+                        // Declare post_data object with station array and a password
+                        var post_data = {
+                            stations: [],
+                            password: password
+                        };
+                        // Original data is a mess of arrays and objects, just put the required data to the stations array
+                        $.each(data, function(i, item) {
+                            post_data.stations.push(item);
+                        });
+                        // Post the data
+                        $.post(url, post_data, function(response) {
+                            // Collect the response and alert about all fails
+                            alertify.set('notifier','delay', 10);
+                            alertify.set('notifier','position', 'top-center');
+                            response.result.forEach(element => {
+                                if(element.status == "failed") {
+                                    alertify.error(element.station + ":\n" + element.status + ":\n" + element.message);
+                                }
+                            });
+                        }, 'json');
+                    },
+                    'type': 'password', // Input type password
+                    'title': 'Password' // Prompt title
+                });
 
             });
         }

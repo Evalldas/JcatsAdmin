@@ -16,6 +16,7 @@
     z-index: 10; /* Stay behind the modal, but on top of everything else */
     padding: 15px;
     top: 0;
+    margin: 0;
     position: sticky;
     background-color: #fefefe;
     border-bottom-style: solid;
@@ -93,4 +94,18 @@
 
 .checkbox > input:active {
     border: 2px solid #34495E;
+}
+
+.task-menu-group {
+  text-align: center;
+  border-color: black;
+  border-style: solid;
+  border-width: 1px;
+  min-width: 300px;
+}
+
+.task-menu-group .btn {
+  margin-top: 3px;
+  margin-bottom: 3px;
+  min-width: 128px;;
 }

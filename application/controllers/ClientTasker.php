@@ -38,26 +38,43 @@
 
 
         public function reboot() {
-            $stations = $this->input->post('stations');
-            $password = $this->input->post('password');
-            print_r($stations);
+            // Get data from the POST
+            $stations = $this->input->post('stations'); // Array of stations
+            $password = $this->input->post('password'); // A password for SSH
+            $counter = 0; // Counter for array loop
             foreach ($stations as $station) {
-                print_r($station);
+                // Check the connection first
                 if($this->ping($station['ip'])) {
-                    $ssh = new Net_SSH2($station['ip']);
+                    $ssh = new Net_SSH2($station['ip']); // Set the IP to SSH
                     if (!$ssh->login('root', $password)) {
-                        exit('Login Failed');
+                        // If connection is not successful set response record accordingly
+                        $response[$counter] = [
+                            'station' => $station['name'],
+                            'status' => "failed",
+                            'message' => "Could not establish the connection, please check the password"
+                        ];
+                    } else{
+                        $ssh->exec('reboot');
+                        $response[$counter] = [
+                        'station' => $station['name'],
+                        'status' => "success",
+                        'message' => "Station was rebooted successfully"
+                    ];
                     }
-                    $ssh->exec('reboot');
-                    return "success";
                 }
                 else {
-                    return "Could not connect";
+                    // If host does not respond to ping
+                    $response[$counter] = [
+                        'station' => $station['name'],
+                        'status' => "failed",
+                        'message' => "There's no network connection to that station"
+                    ];
                 }
+                $counter++;
             }
             // Set output data type to json
             $this->output->set_content_type('application/json');
-            $this->output->set_output(json_encode(['result' => $stations]));
+            $this->output->set_output(json_encode(['result' => $response]));
             return null;
         }
 

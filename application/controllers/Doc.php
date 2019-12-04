@@ -11,7 +11,12 @@
         }
 
         public function index($page = "docs") {
+            $user_id = $this->session->userdata('id');
+            if(!$user_id) {
+                $this->logout();
+            }
             $this->load->view('header_view');
+            $this->load->view('navbar_view');
             $this->load->view('doc/side_menu_view');
             $this->load->view('doc/main_doc_view');
             $this->load->view('footer_view');

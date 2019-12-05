@@ -37,6 +37,11 @@
         }
 
 
+        /**
+         * reboot
+         *
+         * @return void
+         */
         public function reboot() {
             // Get data from the POST
             $stations = $this->input->post('stations'); // Array of stations
@@ -60,6 +65,139 @@
                         'status' => "success",
                         'message' => "Station was rebooted successfully"
                     ];
+                    }
+                }
+                else {
+                    // If host does not respond to ping
+                    $response[$counter] = [
+                        'station' => $station['name'],
+                        'status' => "failed",
+                        'message' => "There's no network connection to that station"
+                    ];
+                }
+                $counter++;
+            }
+            // Set output data type to json
+            $this->output->set_content_type('application/json');
+            $this->output->set_output(json_encode(['result' => $response]));
+            return null;
+        }
+
+        /**
+         * reboot
+         *
+         * @return void
+         */
+        public function installJcats() {
+            // Get data from the POST
+            $stations = $this->input->post('stations'); // Array of stations
+            $password = $this->input->post('password'); // A password for SSH
+            $server_ip = $this->input->post('server'); // A IP for the directory mounting
+            $counter = 0; // Counter for array loop
+            // Connect to the server and check JCATS version
+            $ssh2 = new Net_SSH2($server_ip);
+            $ssh2->login('root', $password);
+            $jcats_v = $ssh2->exec('ls /home/jcats/');
+            $jcats_v = trim($jcats_v);
+            //-----------------------------------------------
+            foreach ($stations as $station) {
+                // Check the connection first
+                if($this->ping($station['ip'])) {
+                    $ssh = new Net_SSH2($station['ip']); // Set the IP to SSH
+                    if (!$ssh->login('root', $password)) {
+                        // If connection is not successful set response record accordingly
+                        $response[$counter] = [
+                            'station' => $station['name'],
+                            'status' => "failed",
+                            'message' => "Could not establish the connection, please check the password"
+                        ];
+                    } else{
+                        // Check if station already has jcats on it
+                        $check_jcats = $ssh->exec('ls /home/jcats/');
+                        if(!$check_jcats)  {
+                            // Make JCATS directory
+                            $ssh->exec('mkdir /home/jcats');
+                            // Mount servers JCATS directory
+                            $ssh->exec("mount $server_ip:/home/jcats /home/jcats");
+                            // Check the hostname of the station
+                            $name = $ssh->exec('hostname');
+                            // Execute the installation
+                            $output = $ssh->exec("/home/jcats/$jcats_v/sysadm/utils/quick_start_client -d | tee /root/qsc-$name.txt");
+                            // Fill in the response
+                            $response[$counter] = [
+                                'station' => $station['name'],
+                                'status' => $jcats_v,
+                                'message' => "$output :Jcats was installed successfuly"
+                            ];
+                        } else {
+                            $response[$counter] = [
+                                'station' => $station['name'],
+                                'status' => "failed",
+                                'message' => "Jcats is already installed on the system"
+                            ];
+                        }
+                    }
+                }
+                else {
+                    // If host does not respond to ping
+                    $response[$counter] = [
+                        'station' => $station['name'],
+                        'status' => "failed",
+                        'message' => "There's no network connection to that station"
+                    ];
+                }
+                $counter++;
+            }
+            // Set output data type to json
+            $this->output->set_content_type('application/json');
+            $this->output->set_output(json_encode(['result' => $response]));
+            return null;
+        }
+
+        /**
+         * reboot
+         *
+         * @return void
+         */
+        public function removeJcats() {
+            // Get data from the POST
+            $stations = $this->input->post('stations'); // Array of stations
+            $password = $this->input->post('password'); // A password for SSH
+            $counter = 0; // Counter for array loop
+            foreach ($stations as $station) {
+                // Check the connection first
+                if($this->ping($station['ip'])) {
+                    $ssh = new Net_SSH2($station['ip']); // Set the IP to SSH
+                    if (!$ssh->login('root', $password)) {
+                        // If connection is not successful set response record accordingly
+                        $response[$counter] = [
+                            'station' => $station['name'],
+                            'status' => "failed",
+                            'message' => "Could not establish the connection, please check the password"
+                        ];
+                    } else{
+                        // Check the JCATS version on the mashine
+                        $jcats_v = $ssh->exec('ls /home/jcats/');
+                        if ($jcats_v) {
+                            $jcats_v = trim($jcats_v);
+                            // Run the putback client script
+                            $ssh->exec("echo -ne '\n' | /home/jcats/$jcats_v/sysadm/utils/putback.client");
+                            // Reboot the machine after
+                            $ssh->exec('reboot');
+                            // Fill in the response
+                            $response[$counter] = [
+                                'station' => $station['name'],
+                                'status' => "success",
+                                'message' => "Jcats unninstalled successfuly"
+                            ];
+                        } else {
+                            // If station doesn't have a JCATS on it
+                            $response[$counter] = [
+                                'station' => $station['name'],
+                                'status' => "failed",
+                                'message' => "Jcats is not installed on the system"
+                            ];
+                        }
                     }
                 }
                 else {

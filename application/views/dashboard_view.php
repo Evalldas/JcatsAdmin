@@ -9,21 +9,21 @@
     <div class="col-lg-2 task-menu-group">
         <label for="quickCommands">Quick commands</label><br>
         <div class="btn-group" role="group">
-            <button class="btn btn-primary" id="rebootButton"
+            <button class="btn btn-primary btnAction" id="rebootButton"
                 action="<?=base_url()?>ClientTasker/reboot">Reboot</button>
         </div>
     </div>
     <div class="col-lg-8 task-menu-group">
         <label for="jcatsProperties">Jcats actions</label><br>
         <div class="btn-group" role="group">
-            <select name="serverIp" class="btn btn-secondary">
+            <select id="selectServer" name="serverIp" class="btn btn-secondary">
                 <?php foreach($servers as $server) {?>
                 <option value="<?=$server['ip'];?>"><?=$server['name'];?></option>
                 <?php }?>
             </select>
-            <button class="btn btn-primary" name="task" value="installJcats">Install Jcats</button>
-            <button class="btn btn-primary" name="task" value="removeJcats">Remove Jcats</button>
-            <button class="btn btn-primary" name="task" value="changeServer">Change server</button>
+            <button action="<?=base_url()?>ClientTasker/installJcats" class="btn btn-primary btnAction" name="task" value="installJcats">Install Jcats</button>
+            <button action="<?=base_url()?>ClientTasker/removeJcats" class="btn btn-primary btnAction" name="task" value="removeJcats">Remove Jcats</button>
+            <button action="<?=base_url()?>ClientTasker/switchServer" class="btn btn-primary btnAction" name="task" value="changeServer">Switch Server</button>
         </div>
     </div>
 </div>
@@ -147,8 +147,10 @@ $(document).ready(function() {
             /**
              * Handle the Reboot button
              */
-            $('#rebootButton').click(function() {
+            $('.btnAction').click(function() {
                 event.preventDefault(); // Prevent default action
+                var select = document.getElementById("selectServer");
+                var server = select.options[select.selectedIndex].value;
                 var data = stationTable.rows('.selected')
                     .data(); // Get data from the selected rows
                 var url = $(this).attr('action'); // Get the URL from buttons attribute
@@ -159,7 +161,8 @@ $(document).ready(function() {
                         // Declare post_data object with station array and a password
                         var post_data = {
                             stations: [],
-                            password: password
+                            password: password,
+                            server: server
                         };
                         // Original data is a mess of arrays and objects, just put the required data to the stations array
                         $.each(data, function(i, item) {
@@ -167,6 +170,7 @@ $(document).ready(function() {
                         });
                         // Post the data
                         $.post(url, post_data, function(response) {
+                            console.log(response);
                             // Collect the response and alert about all fails
                             alertify.set('notifier','delay', 10);
                             alertify.set('notifier','position', 'top-center');
@@ -174,6 +178,7 @@ $(document).ready(function() {
                                 if(element.status == "failed") {
                                     alertify.error(element.station + ":\n" + element.status + ":\n" + element.message);
                                 }
+        
                             });
                         }, 'json');
                     },

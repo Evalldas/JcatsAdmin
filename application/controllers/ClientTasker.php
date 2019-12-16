@@ -84,7 +84,7 @@
         }
 
         /**
-         * reboot
+         * 
          *
          * @return void
          */
@@ -126,8 +126,8 @@
                             // Fill in the response
                             $response[$counter] = [
                                 'station' => $station['name'],
-                                'status' => $jcats_v,
-                                'message' => "$output :Jcats was installed successfuly"
+                                'status' => "success",
+                                'message' => "Jcats was installed successfuly"
                             ];
                         } else {
                             $response[$counter] = [
@@ -281,4 +281,22 @@
                 return false;
             }
         }
+
+        function statusUpdate() {
+            $stations = $this->client_model->get();
+            foreach ($stations as $station) {
+                $host = $station['ip'];
+                exec("timeout 0.2 ping -c1 $host", $output, $result);
+                if($result === 0) {
+                    $this->client_model->update([
+                        'status' => 1
+                    ], $station['id']);
+                } else {
+                    $this->client_model->update([
+                        'status' => 0
+                    ], $station['id']);
+                }
+            }
+        }
+
     }

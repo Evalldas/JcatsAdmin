@@ -8,7 +8,6 @@
             $this->load->model("Server_model");
             $this->load->model("Client_model");
             $user_id = $this->session->userdata('id');
-            
         }
 
         public function index($page = 'dashboard') {
@@ -18,6 +17,7 @@
             }
             $data['servers'] = $this->Server_model->get();
             $data['clients'] = $this->Client_model->get();
+
             $this->load->view('header_view');
             $this->load->view('navbar_view');
             $this->load->view('dashboard_view', $data);
@@ -54,4 +54,6 @@
             $this->load->view('login_view');
             $this->load->view('footer_view');
         }
+
+
     }

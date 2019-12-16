@@ -72,10 +72,12 @@
             $name = $this->input->post('name');
             $ip = $this->input->post('ip');
             $server_id = $this->input->post('server_id');
+            $status = $this->input->post('status');
             $result = $this->client_model->update([
                 'name' => $name,
                 'ip' => $ip,
-                'server_id' => $server_id
+                'server_id' => $server_id,
+                'status' => $status
             ], $id);
 
            // Set output data type to json

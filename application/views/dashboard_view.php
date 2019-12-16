@@ -86,20 +86,6 @@ $(document).ready(function() {
     }
 
     /**
-     * Button functions
-     */
-    // Update status
-    $('#updateStatusButton').click(function() {
-        event.preventDefault(); // Prevent default action
-        var url = $(this).attr('action'); // Get the URL from buttons attribute
-        $.ajax({
-            methot: 'POST',
-            url: url
-        });
-
-    });
-
-    /**
      * DataTable for displaying station info
      * Made using DataTables framework
      * Uses AJAX sourced data
@@ -138,7 +124,7 @@ $(document).ready(function() {
                  * 
                  * Does the job, but does not allow table to sort by this column
                  * TODO: make it to render actual data, not only display cell value
-                */
+                 */
                 render: function(data, type, full, meta) {
                     var currentCell = $("#stationTableDashboard")
                         .DataTable().cells({
@@ -174,15 +160,36 @@ $(document).ready(function() {
         ]
     });
 
-    
-    /*
-    // Realoads data every 3 seconds, but deselects selected rows
-    // workaround would be to execute only if all rows are deselected
+
+
+    // Realoads data every 15 seconds, but deselects selected rows
+    // workaround is to execute only if all rows are deselected
     setInterval(function() {
-        stationTable.ajax.reload(null, false);
-    }, 3000);
-    */
-    
+        $.ajax({
+            methot: 'POST',
+            url: base_url + "/ClientTasker/statusUpdate"
+        });
+        if (!stationTable.rows( '.selected' ).any()) {
+            // Reload table data
+            stationTable.ajax.reload();
+        }
+        // Update station status
+    }, 15000);
+
+    /**
+     * Button functions
+     */
+    // Update status
+    $('#updateStatusButton').click(function() {
+        event.preventDefault(); // Prevent default action
+        var url = $(this).attr('action'); // Get the URL from buttons attribute
+        $.ajax({
+            methot: 'POST',
+            url: url
+        });
+
+    });
+
     // Select all the rows in the table
     $('#selectAllRowsButton').click(function() {
         stationTable.rows().select();

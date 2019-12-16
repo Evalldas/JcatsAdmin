@@ -104,8 +104,7 @@
   text-align: center;
   border-color: black;
   border-right: solid;
-  border-width: 1px;;
-  min-width: 300px;
+  border-width: 1px;
 }
 
 .task-menu-group .btn {
@@ -208,3 +207,17 @@
 /*
 * End of login page styling
 */
+
+/*
+* Style status bar
+*/
+.status-red {
+  width: 25px;
+  height: 25px;
+  background: #EF3B3A;
+}
+.status-green {
+  width: 25px;
+  height: 25px;
+  background: #43A047;
+}

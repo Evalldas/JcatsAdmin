@@ -4,8 +4,8 @@
         <div class="btn-group" role="group">
             <button class="btn btn-primary" id="selectAllRowsButton">Select All</button>
             <button class="btn btn-primary" id="deselectAllRowsButton">Deselect All</button>
-            <button action="<?=base_url()?>ClientTasker/statusUpdate" class="btn btn-primary"
-                id="updateStatusButton">Update Status</button>
+            <button action="<?=base_url()?>ClientTasker/statusUpdate" class="btn btn-primary btn-no-response">Update
+                Status</button>
         </div>
     </div>
     <div class="col-lg-2 task-menu-group">
@@ -31,6 +31,13 @@
                 value="changeServer">Switch Server</button>
         </div>
     </div>
+    <div class="col-lg-2 task-menu-group">
+        <label for="quickCommands">Station commands</label><br>
+        <div class="btn-group" role="group">
+            <button class="btn btn-primary btn-post-password"
+                action="<?=base_url()?>ClientTasker/updateStationInfo">Update station info</button>
+        </div>
+    </div>
 </div>
 <table id="stationTableDashboard" class="table" class="display">
     <thead class="thead-dark">
@@ -45,6 +52,7 @@
                 </span>
             </th>
             <th>Status</th>
+            <th>MTU</th>
         </tr>
     </thead>
 </table>
@@ -156,6 +164,9 @@ $(document).ready(function() {
                         return '<div class="status-green"></div>';
                     }
                 }
+            },
+            {
+                "data": "mtu"
             }
         ]
     });
@@ -169,7 +180,7 @@ $(document).ready(function() {
             methot: 'POST',
             url: base_url + "/ClientTasker/statusUpdate"
         });
-        if (!stationTable.rows( '.selected' ).any()) {
+        if (!stationTable.rows('.selected').any()) {
             // Reload table data
             stationTable.ajax.reload();
         }
@@ -180,7 +191,7 @@ $(document).ready(function() {
      * Button functions
      */
     // Update status
-    $('#updateStatusButton').click(function() {
+    $('.btn-no-response').click(function() {
         event.preventDefault(); // Prevent default action
         var url = $(this).attr('action'); // Get the URL from buttons attribute
         $.ajax({
@@ -189,7 +200,24 @@ $(document).ready(function() {
         });
 
     });
+    $('.btn-post-password').click(function() {
+        event.preventDefault(); // Prevent default action
+        var url = $(this).attr('action'); // Get the URL from buttons attribute
+        alertify.prompt('Please enter stations root password').set({
+                // If user pressed OK
+                'onok': function(evt, password) {
+                    // Declare post_data object with station array and a password
+                    var post_data = {
+                        password: password
+                    };
+                    // Post the data
+                    $.post(url, post_data, 'json');
+                },
+                'type': 'password', // Input type password
+                'title': 'Password' // Prompt title
+            });
 
+    });
     // Select all the rows in the table
     $('#selectAllRowsButton').click(function() {
         stationTable.rows().select();
@@ -201,52 +229,56 @@ $(document).ready(function() {
     });
 
     /**
-     * Handle the Reboot button
+     * Handle Action buttons
      */
     $('.btnAction').click(function() {
-        event.preventDefault(); // Prevent default action
-        var select = document.getElementById("selectServer");
-        var server = select.options[select.selectedIndex].value;
-        var data = stationTable.rows('.selected')
-            .data(); // Get data from the selected rows
-        var url = $(this).attr('action'); // Get the URL from buttons attribute
-        // Prompt password form to confirm the action and parse the password to POST request
-        alertify.prompt('Please enter stations root password').set({
-            // If user pressed OK
-            'onok': function(evt, password) {
-                // Declare post_data object with station array and a password
-                var post_data = {
-                    stations: [],
-                    password: password,
-                    server: server
-                };
-                // Original data is a mess of arrays and objects, just put the required data to the stations array
-                $.each(data, function(i, item) {
-                    post_data.stations.push(item);
-                });
-                // Post the data
-                $.post(url, post_data, function(response) {
-                    // Collect the response and alert about all fails
-                    alertify.set('notifier', 'delay', 10);
-                    alertify.set('notifier', 'position',
-                        'top-center');
-                    response.result.forEach(element => {
-                        if (element.status ==
-                            "failed") {
-                            alertify.error(element
-                                .station + ":\n" +
-                                element.status +
-                                ":\n" + element
-                                .message);
-                        }
-
+        if (stationTable.rows('.selected').any()) {
+            event.preventDefault(); // Prevent default action
+            var select = document.getElementById("selectServer");
+            var server = select.options[select.selectedIndex].value;
+            var data = stationTable.rows('.selected')
+                .data(); // Get data from the selected rows
+            var url = $(this).attr('action'); // Get the URL from buttons attribute
+            // Prompt password form to confirm the action and parse the password to POST request
+            alertify.prompt('Please enter stations root password').set({
+                // If user pressed OK
+                'onok': function(evt, password) {
+                    // Declare post_data object with station array and a password
+                    var post_data = {
+                        stations: [],
+                        password: password,
+                        server: server
+                    };
+                    // Original data is a mess of arrays and objects, just put the required data to the stations array
+                    $.each(data, function(i, item) {
+                        post_data.stations.push(item);
                     });
-                }, 'json');
-            },
-            'type': 'password', // Input type password
-            'title': 'Password' // Prompt title
-        });
+                    // Post the data
+                    $.post(url, post_data, function(response) {
+                        // Collect the response and alert about all fails
+                        alertify.set('notifier', 'delay', 10);
+                        alertify.set('notifier', 'position',
+                            'top-center');
+                        response.result.forEach(element => {
+                            if (element.status ==
+                                "failed") {
+                                alertify.error(element
+                                    .station + ":\n" +
+                                    element.status +
+                                    ":\n" + element
+                                    .message);
+                            }
 
+                        });
+                    }, 'json');
+                },
+                'type': 'password', // Input type password
+                'title': 'Password' // Prompt title
+            });
+
+        } else {
+            alertify.alert('Alert message', 'No stations are selected!');
+        }
     });
 });
 </script>

@@ -224,17 +224,21 @@
           *
           * @return void
           */
-         public function updateStationInfo($station_data, $password) {
-             
-             // Variables
-             $domain_name = trim($this->getDomainInfo($station_data['ip'], $password));
-             $server_data = $this->server_model->getServerByDomainName($domain_name);
-
-             $result = $this->client_model->update([
-                'name' => $station_data['name'],
-                'ip' => $station_data['ip'],
-                'server_id' => $server_data[0]['id']
-            ], $station_data['id']);
+         public function updateStationInfo() {
+             $station_data = $this->client_model->get();
+             $password = $this->input->post('password');
+             foreach ($station_data as $station) {
+                 // Variables
+                $domain_name = trim($this->getDomainInfo($station['ip'], $password));
+                $mtu = trim($this->getMtuInfo($station['ip'], $password));
+                $server_data = $this->server_model->getServerByDomainName($domain_name);
+                $result = $this->client_model->update([
+                   'name' => $station['name'],
+                   'ip' => $station['ip'],
+                   'server_id' => $server_data[0]['id'],
+                   'mtu' => $mtu
+               ], $station_data['id']);
+             }
 
          }
         
@@ -255,6 +259,23 @@
                 }
                 $domain_name = $ssh->exec('domainname');
                 return $domain_name;
+            }
+            else {
+                return "Could not connect";
+            }
+        }
+        
+        public function getMtuInfo($host, $password) {
+            if($this->ping($host)) {
+                $ssh = new Net_SSH2($host);
+                if (!$ssh->login('root', $password)) {
+                    exit('Login Failed');
+                }
+                // Find the default network interface used by the mashine
+                $default_interface = $ssh->exec('route | grep "^default" | grep -o "[^ ]*$" | head -n1');
+                // Find mtu of that interface
+                $mtu = $ssh->exec("cat /sys/class/net/$default_interface/mtu");
+                return $mtu;
             }
             else {
                 return "Could not connect";

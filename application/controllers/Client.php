@@ -33,12 +33,14 @@
             // Get data from form through POST method
             $client_name = $this->input->post('name');
             $client_ip = $this->input->post('ip');
+            $mtu = $this->input->post('mtu');
             $server_id = 0; // Byt default given server id 0. Later updates automatically when station connects to the network
             // Parse data array to the client_model func insert();
             $result = $this->client_model->insert([
                 'name' => $client_name,
                 'ip' => $client_ip,
-                'server_id' => $server_id
+                'server_id' => $server_id,
+                'mtu' => $mtu
             ]);
             
             // Set output data type to json
@@ -73,11 +75,13 @@
             $ip = $this->input->post('ip');
             $server_id = $this->input->post('server_id');
             $status = $this->input->post('status');
+            $mtu = $this->input->post('mtu');
             $result = $this->client_model->update([
                 'name' => $name,
                 'ip' => $ip,
                 'server_id' => $server_id,
-                'status' => $status
+                'status' => $status,
+                'mtu' => $mtu
             ], $id);
 
            // Set output data type to json

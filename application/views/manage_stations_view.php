@@ -32,9 +32,9 @@
                     <th>Name</th>
                     <th>IP address</th>
                     <th>Server
-                        <span class="server-info-icon">
+                        <span class="info-icon">
                             <span class="fas fa-info-circle"></span>
-                            <span class="server-info-message">This column shows
+                            <span class="info-message">This column shows
                                 what server the station is linked to</span>
                         </span>
                     </th>

@@ -42,8 +42,20 @@ class User_model extends CI_model {
      * @usage $this->User_model->delete(1);
      */
     public function delete($id){
-        $this->db->delete('user', array('user_id' => $id));
+        $this->db->delete('user', array('id' => $id));
         return $this->db->affected_rows();
+    }
+
+    /**
+     * get_roles
+     *
+     * @param  mixed $data
+     *
+     * @return void
+     */
+    public function get_roles(){
+        $query = $this->db->get('role');
+        return $query->result_array();
     }
 }
 

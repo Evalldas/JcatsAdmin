@@ -14,11 +14,18 @@
             <li class="nav-item ">
                 <a class="nav-link" href="<?=site_url('dashboard/manage_stations')?>">Manage stations </a>
             </li>
-            <li class="nav-item ">
-                <a class="nav-link" href="<?=site_url('doc/index')?>">Help </a>
+            <?php if($user_role == 1){?>
+            <li class="nav-item">
+                <a class="nav-link" href="<?=site_url('dashboard/admin_tools')?>">Admin tools </a>
             </li>
-            <li class="nav-item right">
-                <a class="nav-link" href="<?=site_url('dashboard/logout')?>">Logout </a>
+            <?php }?>
+        </ul>
+        <ul class="nav navbar-nav ml-auto">
+            <li class="nav-item my-2 my-lg-0">
+                <a class="nav-link" href="<?=site_url('dashboard/profile_management')?>">My profile </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link btn btn-secondary" href="<?=site_url('dashboard/logout')?>">Logout </a>
             </li>
         </ul>
     </div>

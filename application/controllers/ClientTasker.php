@@ -215,9 +215,118 @@
             $this->output->set_output(json_encode(['result' => $response]));
             return null;
         }
+/**
+         * switchServer
+         *
+         * @return void
+         */
+        public function switchServer() {
+            // Get data from the POST
+            $stations = $this->input->post('stations'); // Array of stations
+            $password = $this->input->post('password'); // A password for SSH
+            $server_ip = $this->input->post('server'); // A IP for the directory mounting
+            $new_server_data = $this->server_model->getServerByIpAddress($server_ip);
+            $new_server = $new_server_data[0]['name'];
+            $new_domain = $new_server_data[0]['domain_name'];
+            $counter = 0; // Counter for array loop
+            // Connect to the server and check JCATS version
+            $ssh2 = new Net_SSH2($server_ip);
+            $ssh2->login('root', $password);
+            //find out the jcats version
+            $jcats_v = $ssh2->exec('ls /home/jcats/');
+            $jcats_v = trim($jcats_v);
+            //-----------------------------------------------
+            foreach ($stations as $station) {
+                // Check the connection first
+                if($this->ping($station['ip'])) {
+                    $ssh = new Net_SSH2($station['ip']); // Set the IP to SSH
+                    $domain_name = trim($ssh->exec('domainname'));
+                    $old_server_data = $this->server_model->getServerByDomainName($domain_name);
+                    $old_server = $old_server_data[0]['name'];
+                    if (!$ssh->login('root', $password)) {
+                        // If connection is not successful set response record accordingly
+                        $response[$counter] = [
+                            'station' => $station['name'],
+                            'status' => "failed",
+                            'message' => "Could not establish the connection, please check the password"
+                        ];
+                    } else{
+                        // Check if station already has jcats on it
+                        $check_jcats = $ssh->exec('ls /home/jcats/');
+                        if(!$check_jcats)  {
+                            $response[$counter] = [
+                                'station' => $station['name'],
+                                'status' => "failed",
+                                'message' => "Jcats is not installed on the system or simulation failed to mount"
+                            ];
+                        } else {
+                            // Stop ypbind & xinetd
+                            $ssh->exec('service ypbind stop');
+                            $ssh->exec('service xinetd stop');
+
+                            // Unmount the two mountpoints from the old server
+                            $ssh->exec('umount -l /home/jcats');
+                            $ssh->exec('umount -l /home');
+
+                            // Update the /etc/fstab
+                            //$ssh->exec('sed -e "s#'.$old_server.':/home/jcats[[:blank:]]#'.$new_server.':/home/jcats #g" \
+                            //-e "s#'.$old_server.':/home[[:blank:]]#'.$new_server.':/home #g" /etc/fstab > /tmp/fstab');
+
+                            $ssh->exec("sed -i -e '16s+.*+$new_server:/home/jcats	/home/jcats	nfs bg,soft,rsize=32767,wsize=32767,timeo=14,nosuid,nodev 0 0+g' /etc/fstab");
+                            $ssh->exec("sed -i -e '17s+.*+$new_server:/home	/home	nfs bg,soft,rsize=32767,wsize=32767,timeo=14,nosuid,nodev 0 0+g' /etc/fstab");
+                            //$ssh->exec("mv -f /tmp/fstab /etc/fstab");
+                            $ssh->exec('chcon system_u:object_r:etc_t:s0 /etc/fstab');
+
+                            // Mount back the directories from the new server
+                            $ssh->exec('mount /home');
+                            $ssh->exec('mount /home/jcats');
+
+                            // Change the domainname
+                            $ssh->exec('domainname '.$new_domain.'');
+
+                            // Update the /etc/sysconfig/network file
+                            $ssh->exec('sed -e "/NISDOMAIN/D" /etc/sysconfig/network > /tmp/network');
+                            $ssh->exec('chmod 644 /tmp/network');
+                            $ssh->exec('chown root:root /tmp/network');
+                            $ssh->exec('mv -f /tmp/network /etc/sysconfig/network');
+                            $ssh->exec('echo "NISDOMAIN='.$new_domain.'" >> /etc/sysconfig/network');
+
+                            // Start services
+                            $ssh->exec('service ypbind start');
+                            $ssh->exec('service xinetd start');
+
+                            // Reboot the computer
+                            //$ssh->exec('reboot');
+                            $response[$counter] = [
+                                'station' => $station['name'],
+                                'status' => "success",
+                                'message' => "Successfuly switched the domain server"
+                            ];
+                        }
+                    }
+                }
+                else {
+                    // If host does not respond to ping
+                    $response[$counter] = [
+                        'station' => $station['name'],
+                        'status' => "failed",
+                        'message' => "There's no network connection to that station"
+                    ];
+                }
+                $counter++;
+            }
+            // Set output data type to json
+            $this->output->set_content_type('application/json');
+            $this->output->set_output(json_encode(['result' => $response]));
+            return null;
+        }
+
 
          /**
           * updateStationInfo
+          * Gets info about all stations and updates the database with it.
+          * 
+          * TODO: Make it skip connection to the daatabae if connection was not successful
           *
           * @param  mixed $station_data
           * @param  mixed $password
@@ -226,18 +335,21 @@
           */
          public function updateStationInfo() {
              $station_data = $this->client_model->get();
-             $password = $this->input->post('password');
+             $password = "Dragon01";
              foreach ($station_data as $station) {
                  // Variables
                 $domain_name = trim($this->getDomainInfo($station['ip'], $password));
                 $mtu = trim($this->getMtuInfo($station['ip'], $password));
                 $server_data = $this->server_model->getServerByDomainName($domain_name);
-                $result = $this->client_model->update([
+                print_r($station['name'] . $domain_name);
+                if($server_data && $mtu) {
+                    $result = $this->client_model->update([
                    'name' => $station['name'],
                    'ip' => $station['ip'],
                    'server_id' => $server_data[0]['id'],
                    'mtu' => $mtu
-               ], $station_data['id']);
+               ], $station['id']);
+                }
              }
 
          }
@@ -257,11 +369,11 @@
                 if (!$ssh->login('root', $password)) {
                     exit('Login Failed');
                 }
-                $domain_name = $ssh->exec('domainname');
+                $domain_name = $ssh->exec('nisdomainname');
                 return $domain_name;
             }
             else {
-                return "Could not connect";
+                return null;
             }
         }
         
@@ -272,13 +384,13 @@
                     exit('Login Failed');
                 }
                 // Find the default network interface used by the mashine
-                $default_interface = $ssh->exec('route | grep "^default" | grep -o "[^ ]*$" | head -n1');
+                $default_interface = trim($ssh->exec('route | grep "^default" | grep -o "[^ ]*$" | head -n1'));
                 // Find mtu of that interface
                 $mtu = $ssh->exec("cat /sys/class/net/$default_interface/mtu");
                 return $mtu;
             }
             else {
-                return "Could not connect";
+                return null;
             }
         }
         
@@ -318,6 +430,48 @@
                     ], $station['id']);
                 }
             }
+        }
+
+        public function changeMtu() {
+            $stations = $this->input->post('stations'); // Array of stations
+            $password = $this->input->post('password'); // A password for SSH
+            $mtu = $this->input->post('mtu');
+            $counter = 0; // Counter for array loop
+            foreach ($stations as $station) {
+                // Check the connection first
+                if($this->ping($station['ip'])) {
+                    $ssh = new Net_SSH2($station['ip']); // Set the IP to SSH
+                    if (!$ssh->login('root', $password)) {
+                        // If connection is not successful set response record accordingly
+                        $response[$counter] = [
+                            'station' => $station['name'],
+                            'status' => "failed",
+                            'message' => "Could not establish the connection, please check the password"
+                        ];
+                    } else{
+                        $default_interface = trim($ssh->exec('route | grep "^default" | grep -o "[^ ]*$" | head -n1'));
+                        $ssh->exec("ifconfig $default_interface mtu $mtu");
+                        $response[$counter] = [
+                            'station' => $station['name'],
+                            'status' => "success",
+                            'message' => "Successfully changes MTU size of the station"
+                        ];
+                    }
+                }
+                else {
+                    // If host does not respond to ping
+                    $response[$counter] = [
+                        'station' => $station['name'],
+                        'status' => "failed",
+                        'message' => "There's no network connection to that station"
+                    ];
+                }
+                $counter++;
+            }
+            // Set output data type to json
+            $this->output->set_content_type('application/json');
+            $this->output->set_output(json_encode(['result' => $response]));
+            return null;
         }
 
     }

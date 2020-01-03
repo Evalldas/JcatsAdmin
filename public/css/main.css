@@ -1,6 +1,8 @@
   .right {
     right: 5px;
-    position: fixed;
+    position: absolute;
+    margin: 2px;
+
   }
   .table {
       margin-top: 20px;
@@ -33,13 +35,13 @@
   }
 
   /* Question mark for server info message */
-  .server-info-icon:hover,
-  .server-info-icon:focus {
+  .info-icon:hover,
+  .info-icon:focus {
     text-decoration: none;
     cursor: pointer;
   }
 
-  .server-info-message {
+  .info-message {
     visibility: hidden;
     position: absolute;
     z-index: 15;
@@ -49,7 +51,7 @@
     border-radius: 5px; /* Make it al roundy and stuff */
   }
 
-  .server-info-icon:hover .server-info-message {
+  .info-icon:hover .info-message {
     visibility: visible;
   }
 

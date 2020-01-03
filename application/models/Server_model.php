@@ -43,6 +43,19 @@
         }
 
         /**
+         * getServerByIpAddress
+         *
+         * @param  mixed $ip_address
+         *
+         * @return void
+         */
+        public function getServerByIpAddress($ip_address) {
+            
+            $query = $this->db->get_where('server', ['ip' => $ip_address]);
+            return $query->result_array();
+        }
+
+        /**
          * insert
          *
          * @param  mixed $data Array to store parsed data

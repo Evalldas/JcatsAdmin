@@ -18,10 +18,8 @@
         $.post(url, post_data, function(o) {
             if(o.result == 1) {
                 window.location.href = base_url + "dashboard/";
-                console.log(o);
             }
                 alertify.error("Login failed");
-                console.log(o.result);
             
         }, 'json');
     });
